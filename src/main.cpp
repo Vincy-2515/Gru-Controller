@@ -10,7 +10,7 @@ void setup() {
 	Serial.begin(SERIAL_BAUD);
 	printInfoMessage("Starting setup procedure...");
 
-	pinSetup();
+	componentSetup();
 	bleGruControllerSetup();
 	
 	printInfoMessage("Setup completed");

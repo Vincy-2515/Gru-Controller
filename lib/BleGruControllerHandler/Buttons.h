@@ -9,8 +9,8 @@
 #define NUMBER_OF_BUTTONS (8)
 
 typedef enum {
-    BTN_PRESSED,
-    BTN_RELEASED
+	BTN_PRESSED,
+	BTN_RELEASED
 };
 
 extern Button buttons[NUMBER_OF_BUTTONS];

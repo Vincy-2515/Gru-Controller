@@ -81,7 +81,7 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 			    "Command recognized: Pressed \"%s\"",
 			    b.getButtonName());
 
-			b.callHandler(BTN_PRESSED);
+			b.callHandler(BUTTON_PRESSED);
 
 			printInfoMessage(msg_buffer);
 			__characteristicTx.writeValue(msg_buffer);
@@ -94,7 +94,7 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 			    "Command recognized: Released \"%s\"",
 			    b.getButtonName());
 
-			b.callHandler(BTN_RELEASED);
+			b.callHandler(BUTTON_RELEASED);
 
 			printInfoMessage(msg_buffer);
 			__characteristicTx.writeValue(msg_buffer);

@@ -5,6 +5,7 @@
 #include <EEPROM.h>
 #include <EepromAdresses.h>
 #include <logHandler.h>
+#include <Motors.h>
 
 #pragma once
 

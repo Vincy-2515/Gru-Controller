@@ -5,6 +5,7 @@
 
 #include <Arduino.h>
 #include <Button.h>
+#include <Motors.h>
 
 #define NUMBER_OF_BUTTONS (8)
 

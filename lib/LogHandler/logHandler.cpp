@@ -6,9 +6,10 @@ static void __printHeader(const char* file, const char* function, int line, int 
 static void __printInfoHeader(const char* function);
 static void __printWarningHeader(const char* function);
 static void __printErrorHeader(const char* file, const char* function, int line);
-static void __shorten_function_name(char* function_name_buffer, const char* function);
+static void __shortenFuntionName(char* function_name_buffer, const char* function);
 
 void __printLogMessage(const char* file, const char* function, int line, const char log_level, const char* format, ...) {
+	const char truncated_message_notice[] = "...[some characters got truncated]";
 	char buffer[MESSAGE_BUFFER_SIZE];
 	va_list p_arguments;
 
@@ -23,21 +24,17 @@ void __printLogMessage(const char* file, const char* function, int line, const c
 	 * - len (riferito al format fornito): numero di carateri che DOVREBBERO
 	 * essere scritti
 	 */
-	int result = vsnprintf(buffer, MESSAGE_BUFFER_SIZE, format, p_arguments);
+	int result = vsnprintf(buffer, MESSAGE_BUFFER_SIZE - sizeof(truncated_message_notice), format, p_arguments);
 	va_end(p_arguments);
 
 	if (result > 0 && result < MESSAGE_BUFFER_SIZE) { // Everything written correctly
-
 		__printHeader(file, function, line, log_level);
 		Serial.println(buffer);
 
 	} else if (result > 0 && result >= MESSAGE_BUFFER_SIZE) { // Truncated some characters
-
-		int truncated_characters = result - (MESSAGE_BUFFER_SIZE - 1);
-
 		__printHeader(file, function, line, log_level);
 		Serial.print(buffer);
-		Serial.printf("...[%d characters got truncated]\n", truncated_characters);
+		Serial.println(truncated_message_notice);
 
 	} else if (result < 0) { // Error (value in errno)
 		printErrorMessage("vsnprintf() returned %d, failed the fetching of a message (errno: %d)", result, errno);
@@ -64,7 +61,7 @@ void __printInfoHeader(const char* function) {
 
 	if (size_of_function_name > FUNCTION_NAME_SIZE) {
 		char function_name_buffer[FUNCTION_NAME_SIZE];
-		__shorten_function_name(function_name_buffer, function);
+		__shortenFuntionName(function_name_buffer, function);
 		Serial.printf("[INFO   ][%s...]: ", function_name_buffer);
 	} else {
 		Serial.printf("[INFO   ][%+*s]: ", FUNCTION_NAME_SIZE, function);
@@ -84,7 +81,7 @@ void __printWarningHeader(const char* function) {
 
 	if (size_of_function_name > FUNCTION_NAME_SIZE) {
 		char function_name_buffer[FUNCTION_NAME_SIZE];
-		__shorten_function_name(function_name_buffer, function);
+		__shortenFuntionName(function_name_buffer, function);
 		Serial.printf("[WARNING][%s...]: ", function_name_buffer);
 	} else {
 		Serial.printf("[WARNING][%+*s]: ", FUNCTION_NAME_SIZE, function);
@@ -109,7 +106,7 @@ void __printErrorHeader(const char* file, const char* function, int line) {
 }
 #endif /* LOG_ERRORS */
 
-void __shorten_function_name(char* function_name_buffer, const char* function) {
+void __shortenFuntionName(char* function_name_buffer, const char* function) {
 	if (function_name_buffer == NULL || function == NULL || FUNCTION_NAME_SIZE == 0) {
 		if (function_name_buffer != NULL && FUNCTION_NAME_SIZE > 0) {
 			function_name_buffer[0] = '\0';

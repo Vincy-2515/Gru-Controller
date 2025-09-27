@@ -5,8 +5,8 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <eepromAdresses.h>
 #include <componentHandler.h>
+#include <eepromAdresses.h>
 
 class Motor {
 private:
@@ -37,6 +37,7 @@ public:
 	    int default_speed_eeprom_address);
 	void updateValuesFromEeprom();
 	void transferValuesToEeprom();
+	void setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed);
 	void setFirstGearSpeed(byte first_gear_speed);
 	byte getFirstGearSpeed();
 	void setSecondGearSpeed(byte second_gear_speed);
@@ -45,6 +46,7 @@ public:
 	byte getThirdGearSpeed();
 	void setDefaultSpeed(byte default_speed);
 	byte getDefaultSpeed();
+	String toString();
 };
 
 #endif /* MOTOR_H */

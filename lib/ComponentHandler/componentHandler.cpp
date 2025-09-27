@@ -9,6 +9,10 @@ void componentSetup() {
 		while (true)
 			blinkLedBuiltin(1);
 	}
+
+	for (Motor& m : motors) {
+		m.updateValuesFromEeprom();
+	}
 }
 
 void blinkLedBuiltin(int ripetitions) {

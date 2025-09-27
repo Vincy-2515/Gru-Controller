@@ -10,6 +10,8 @@ BLEStringCharacteristic __characteristicTx(UUID_CHARACTERISTIC_TX,
 void __handleDeviceConnection(BLEDevice central);
 void __handleDeviceDisconnection(BLEDevice central);
 void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic characteristic);
+bool __checkForButtonPress(const char* command, char* msg_buffer);
+bool __checkForCommand(const char* command, char* msg_buffer);
 
 void bleGruControllerSetup() {
 	printInfoMessage("Starting BLE setup procedure...");
@@ -74,6 +76,21 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 	bool is_command_recognized = false;
 	char msg_buffer[TX_VALUE_SIZE];
 
+	is_command_recognized = __checkForButtonPress(command, msg_buffer);
+	is_command_recognized = __checkForCommand(command, msg_buffer);
+
+	if (!is_command_recognized) {
+		snprintf(msg_buffer,
+		    TX_VALUE_SIZE,
+		    "Command unrecognized: %s",
+		    command);
+
+		printErrorMessage(msg_buffer);
+		__characteristicTx.writeValue(msg_buffer);
+	}
+}
+
+bool __checkForButtonPress(const char* command, char* msg_buffer) {
 	for (Button& b : buttons) {
 		if (strcmp(command, b.getButtonPressedKeyCode()) == 0) {
 			snprintf(msg_buffer,
@@ -86,8 +103,7 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 			printInfoMessage(msg_buffer);
 			__characteristicTx.writeValue(msg_buffer);
 
-			is_command_recognized = true;
-			break;
+			return true;
 		} else if (strcmp(command, b.getButtonReleasedKeyCode()) == 0) {
 			snprintf(msg_buffer,
 			    TX_VALUE_SIZE,
@@ -99,20 +115,74 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 			printInfoMessage(msg_buffer);
 			__characteristicTx.writeValue(msg_buffer);
 
-			is_command_recognized = true;
-			break;
+			return true;
 		} else {
 			continue;
 		}
 	}
+	return false;
+}
 
-	if (!is_command_recognized) {
-		snprintf(msg_buffer,
-		    TX_VALUE_SIZE,
-		    "Command unrecognized: %s",
-		    command);
+// COMMANDS:
+// set_motors_speed 0,0,0,0; 0,0,0,0; 0,0,0,0;
+// get_motors_speed
+// write_speeds_to_eeprom
 
-		printErrorMessage(msg_buffer);
-		__characteristicTx.writeValue(msg_buffer);
+bool __checkForCommand(const char* command, char* msg_buffer) {
+	if (strstr(command, "set_motors_speed") != NULL) {
+		byte motor_arm_first_gear_speed;
+		byte motor_arm_second_gear_speed;
+		byte motor_arm_third_gear_speed;
+		byte motor_arm_default_speed;
+
+		byte motor_trolley_first_gear_speed;
+		byte motor_trolley_second_gear_speed;
+		byte motor_trolley_third_gear_speed;
+		byte motor_trolley_default_speed;
+
+		byte motor_coil_first_gear_speed;
+		byte motor_coil_second_gear_speed;
+		byte motor_coil_third_gear_speed;
+		byte motor_coil_default_speed;
+
+		if (sscanf(
+		        command,
+		        "set_motors_speed %d,%d,%d,%d; %d,%d,%d,%d; %d,%d,%d,%d;",
+		        motor_arm_first_gear_speed, motor_arm_second_gear_speed, motor_arm_third_gear_speed, motor_arm_default_speed,
+		        motor_trolley_first_gear_speed, motor_trolley_second_gear_speed, motor_trolley_third_gear_speed, motor_trolley_default_speed,
+		        motor_coil_first_gear_speed, motor_coil_second_gear_speed, motor_coil_third_gear_speed, motor_coil_default_speed)
+		    != EOF) {
+
+			motors[MOTOR_ARM].setAllSpeeds(
+			    motor_arm_first_gear_speed,
+			    motor_arm_second_gear_speed,
+			    motor_arm_third_gear_speed,
+			    motor_arm_default_speed);
+
+			motors[MOTOR_TROLLEY].setAllSpeeds(
+			    motor_trolley_first_gear_speed,
+			    motor_trolley_second_gear_speed,
+			    motor_trolley_third_gear_speed,
+			    motor_trolley_default_speed);
+
+			motors[MOTOR_COIL].setAllSpeeds(
+			    motor_coil_first_gear_speed,
+			    motor_coil_second_gear_speed,
+			    motor_coil_third_gear_speed,
+			    motor_coil_default_speed);
+
+			return true;
+		}
+	} else if (strcmp(command, "get_motors_speed") == 0) {
+		__characteristicTx.writeValue(motors[MOTOR_ARM].toString());
+		__characteristicTx.writeValue(motors[MOTOR_TROLLEY].toString());
+		__characteristicTx.writeValue(motors[MOTOR_COIL].toString());
+		return true;
+	} else if (strcmp(command, "write_speeds_to_eeprom") == 0) {
+		motors[MOTOR_ARM].transferValuesToEeprom();
+		motors[MOTOR_TROLLEY].transferValuesToEeprom();
+		motors[MOTOR_COIL].transferValuesToEeprom();
+		return true;
 	}
+	return false;
 }

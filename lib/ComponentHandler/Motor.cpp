@@ -32,6 +32,13 @@ void Motor::transferValuesToEeprom() {
 	updateValueToEeprom(this->__eeprom_address_default_speed, this->__default_speed);
 }
 
+void Motor::setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed) {
+	this->__first_gear_speed = first_gear_speed;
+	this->__second_gear_speed = second_gear_speed;
+	this->__third_gear_speed = third_gear_speed;
+	this->__default_speed = default_speed;
+}
+
 void Motor::setFirstGearSpeed(byte first_gear_speed) {
 	this->__first_gear_speed = first_gear_speed;
 }
@@ -63,3 +70,19 @@ void Motor::setDefaultSpeed(byte default_speed) {
 byte Motor::getDefaultSpeed() {
 	return this->__default_speed;
 }
+
+// clang-format off
+String Motor::toString() {
+	return (
+		"Motor: {" +
+		this->__motor_name + ", " + 
+		this->__direction_controlling_pin_1 + ", " + 
+		this->__direction_controlling_pin_2 + ", " + 
+		this->__speed_controlling_pin + ", " + 
+		this->__eeprom_address_first_gear_speed + ", " + 
+		this->__eeprom_address_second_gear_speed + ", " + 
+		this->__eeprom_address_third_gear_speed + ", " + 
+		this->__eeprom_address_default_speed + ", " +
+		"}");
+	}
+// clang-format on

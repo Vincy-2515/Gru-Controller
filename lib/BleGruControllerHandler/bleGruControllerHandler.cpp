@@ -73,16 +73,21 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 	String command_string = __characteristicRx.value();
 	const char* command = command_string.c_str();
 
+	printInfoMessage("Received command: \"%s\"", command);
+
 	bool is_command_recognized = false;
 	char msg_buffer[TX_VALUE_SIZE];
 
 	is_command_recognized = __checkForButtonPress(command, msg_buffer);
-	is_command_recognized = __checkForCommand(command, msg_buffer);
+	if (!is_command_recognized) {
+		is_command_recognized = __checkForCommand(command, msg_buffer);
+	}
 
 	if (!is_command_recognized) {
 		snprintf(msg_buffer,
 		    TX_VALUE_SIZE,
-		    "Command unrecognized: %s",
+		    "Command unrecognized: %s"
+		    "\nType \"help\" for help",
 		    command);
 
 		printErrorMessage(msg_buffer);
@@ -123,11 +128,6 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 	return false;
 }
 
-// COMMANDS:
-// set_motors_speed 0,0,0,0; 0,0,0,0; 0,0,0,0;
-// get_motors_speed
-// write_speeds_to_eeprom
-
 bool __checkForCommand(const char* command, char* msg_buffer) {
 	if (strstr(command, "set_motors_speed") != NULL) {
 		byte motor_arm_first_gear_speed;
@@ -148,10 +148,11 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		if (sscanf(
 		        command,
 		        "set_motors_speed %d,%d,%d,%d; %d,%d,%d,%d; %d,%d,%d,%d;",
-		        motor_arm_first_gear_speed, motor_arm_second_gear_speed, motor_arm_third_gear_speed, motor_arm_default_speed,
-		        motor_trolley_first_gear_speed, motor_trolley_second_gear_speed, motor_trolley_third_gear_speed, motor_trolley_default_speed,
-		        motor_coil_first_gear_speed, motor_coil_second_gear_speed, motor_coil_third_gear_speed, motor_coil_default_speed)
+		        &motor_arm_first_gear_speed, &motor_arm_second_gear_speed, &motor_arm_third_gear_speed, &motor_arm_default_speed,
+		        &motor_trolley_first_gear_speed, &motor_trolley_second_gear_speed, &motor_trolley_third_gear_speed, &motor_trolley_default_speed,
+		        &motor_coil_first_gear_speed, &motor_coil_second_gear_speed, &motor_coil_third_gear_speed, &motor_coil_default_speed)
 		    != EOF) {
+			printInfoMessage("Setting motors speeds...");
 
 			motors[MOTOR_ARM].setAllSpeeds(
 			    motor_arm_first_gear_speed,
@@ -173,15 +174,61 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 
 			return true;
 		}
-	} else if (strcmp(command, "get_motors_speed") == 0) {
-		__characteristicTx.writeValue(motors[MOTOR_ARM].toString());
-		__characteristicTx.writeValue(motors[MOTOR_TROLLEY].toString());
-		__characteristicTx.writeValue(motors[MOTOR_COIL].toString());
+	} else if (strstr(command, "get_motors_info") != NULL) {
+		printInfoMessage("Printing motors informations...");
+
+		String string = motors[MOTOR_ARM].toString() + ", " + motors[MOTOR_TROLLEY].toString() + ", " + motors[MOTOR_COIL].toString();
+		__characteristicTx.writeValue(string);
+		printInfoMessage(string.c_str());
 		return true;
-	} else if (strcmp(command, "write_speeds_to_eeprom") == 0) {
+	} else if (strstr(command, "write_speeds_to_eeprom") != NULL) {
+		printInfoMessage("Writing values to EEPROM memory...");
+
+		//########################################################################################################################################
+		//########################################################################################################################################
+		//########################################################################################################################################
+		//########################################################### NON FUNZIONA ###############################################################
+		//########################################################################################################################################
+		//########################################################################################################################################
+		//########################################################################################################################################
+		
 		motors[MOTOR_ARM].transferValuesToEeprom();
 		motors[MOTOR_TROLLEY].transferValuesToEeprom();
 		motors[MOTOR_COIL].transferValuesToEeprom();
+		return true;
+	} else if (strstr(command, "help") != NULL) {
+		printInfoMessage("Printing help informations...");
+
+		// clang-format off
+		String string = String("") +
+		"\n-=={ HELP MENU }==-" +
+		"\n\nAvailable commands:" +
+		"\n  > set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;" +
+		"\n  > get_motors_info" +
+		"\n  > write_speeds_to_eeprom" + 
+		"\n  > help" +
+		"\n  > info" +
+		"\n\nFor more information visit:" + 
+		"\nhttps://something.org";
+		// clang-format on
+
+		__characteristicTx.writeValue(string);
+		
+		return true;
+	} else if (strstr(command, "info") != NULL) {
+		printInfoMessage("Printing infos...");
+
+		// clang-format off
+		String string = String("") +
+		"\n-=={ INFORMATIONS }==-" +
+		"\n" +
+		"\n Version: v1.0.0" +
+		"\n Developer: Vincy-2515" +
+		"\n Github: https://github.com/Vincy-2515";
+		// clang-format on
+
+		__characteristicTx.writeValue(string);
+		
 		return true;
 	}
 	return false;

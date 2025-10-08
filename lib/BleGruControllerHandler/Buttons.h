@@ -1,8 +1,6 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-#pragma once
-
 #include <Arduino.h>
 #include <Button.h>
 #include <Motors.h>

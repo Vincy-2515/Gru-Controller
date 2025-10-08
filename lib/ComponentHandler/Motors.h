@@ -4,8 +4,6 @@
 #include <Arduino.h>
 #include <Motor.h>
 
-#pragma once
-
 #define NUMBER_OF_MOTORS (3)
 
 #define MOTOR_ARM_NAME "MOTOR_ARM"
@@ -28,6 +26,8 @@ typedef enum {
     MOTOR_TROLLEY,
     MOTOR_COIL
 } Motors;
+
+class Motor;
 
 extern Motor motors[NUMBER_OF_MOTORS];
 

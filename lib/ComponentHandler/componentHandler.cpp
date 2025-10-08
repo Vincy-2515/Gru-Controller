@@ -29,5 +29,6 @@ void blinkLedBuiltin(int ripetitions) {
 void updateValueToEeprom(int address, byte value) {
 	if (EEPROM.read(address) != value) {
 		EEPROM.write(address, value);
+		EEPROM.commit();
 	}
 }

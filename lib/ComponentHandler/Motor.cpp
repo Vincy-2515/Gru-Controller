@@ -74,15 +74,18 @@ byte Motor::getDefaultSpeed() {
 // clang-format off
 String Motor::toString() {
 	return (
-		"Motor: {" +
-		this->__motor_name + ", " + 
+		this->__motor_name + ": {" + 
 		this->__direction_controlling_pin_1 + ", " + 
 		this->__direction_controlling_pin_2 + ", " + 
 		this->__speed_controlling_pin + ", " + 
+		this->__first_gear_speed + ", " + 
+		this->__second_gear_speed + ", " + 
+		this->__third_gear_speed + ", " + 
+		this->__default_speed + ", " + 
 		this->__eeprom_address_first_gear_speed + ", " + 
 		this->__eeprom_address_second_gear_speed + ", " + 
 		this->__eeprom_address_third_gear_speed + ", " + 
-		this->__eeprom_address_default_speed + ", " +
+		this->__eeprom_address_default_speed +
 		"}");
 	}
 // clang-format on

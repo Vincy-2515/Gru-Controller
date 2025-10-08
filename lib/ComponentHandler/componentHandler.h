@@ -3,11 +3,9 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <EepromAdresses.h>
+#include <EepromAddresses.h>
 #include <logHandler.h>
 #include <Motors.h>
-
-#pragma once
 
 void componentSetup();
 void blinkLedBuiltin(int ripetitions);

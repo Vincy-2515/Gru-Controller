@@ -48,7 +48,7 @@ void bleGruControllerSetup() {
 	}
 	printInfoMessage("Advertising started successfully");
 
-	printInfoMessage("BLE setup completed");
+	printInfoMessage("BLE setup procedure ended");
 }
 
 void bleGruControllerLoop() {
@@ -125,6 +125,7 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 			continue;
 		}
 	}
+
 	return false;
 }
 
@@ -154,19 +155,19 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		    != EOF) {
 			printInfoMessage("Setting motors speeds...");
 
-			motors[MOTOR_ARM].setAllSpeeds(
+			motors[MOTOR_ARM]->setAllSpeeds(
 			    motor_arm_first_gear_speed,
 			    motor_arm_second_gear_speed,
 			    motor_arm_third_gear_speed,
 			    motor_arm_default_speed);
 
-			motors[MOTOR_TROLLEY].setAllSpeeds(
+			motors[MOTOR_TROLLEY]->setAllSpeeds(
 			    motor_trolley_first_gear_speed,
 			    motor_trolley_second_gear_speed,
 			    motor_trolley_third_gear_speed,
 			    motor_trolley_default_speed);
 
-			motors[MOTOR_COIL].setAllSpeeds(
+			motors[MOTOR_COIL]->setAllSpeeds(
 			    motor_coil_first_gear_speed,
 			    motor_coil_second_gear_speed,
 			    motor_coil_third_gear_speed,
@@ -177,43 +178,34 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 	} else if (strstr(command, "get_motors_info") != NULL) {
 		printInfoMessage("Printing motors informations...");
 
-		String string = motors[MOTOR_ARM].toString() + ", " + motors[MOTOR_TROLLEY].toString() + ", " + motors[MOTOR_COIL].toString();
-		__characteristicTx.writeValue(string);
-		printInfoMessage(string.c_str());
+		__characteristicTx.writeValue(motors[MOTOR_ARM]->toString());
+		printInfoMessage(motors[MOTOR_ARM]->toString().c_str());
+
+		__characteristicTx.writeValue(motors[MOTOR_TROLLEY]->toString());
+		printInfoMessage(motors[MOTOR_TROLLEY]->toString().c_str());
+
+		__characteristicTx.writeValue(motors[MOTOR_COIL]->toString());
+		printInfoMessage(motors[MOTOR_COIL]->toString().c_str());
+
 		return true;
 	} else if (strstr(command, "write_speeds_to_eeprom") != NULL) {
 		printInfoMessage("Writing values to EEPROM memory...");
 
-		//########################################################################################################################################
-		//########################################################################################################################################
-		//########################################################################################################################################
-		//########################################################### NON FUNZIONA ###############################################################
-		//########################################################################################################################################
-		//########################################################################################################################################
-		//########################################################################################################################################
-		
-		motors[MOTOR_ARM].transferValuesToEeprom();
-		motors[MOTOR_TROLLEY].transferValuesToEeprom();
-		motors[MOTOR_COIL].transferValuesToEeprom();
+		motors[MOTOR_ARM]->transferValuesToEeprom();
+		motors[MOTOR_TROLLEY]->transferValuesToEeprom();
+		motors[MOTOR_COIL]->transferValuesToEeprom();
+
 		return true;
 	} else if (strstr(command, "help") != NULL) {
 		printInfoMessage("Printing help informations...");
 
-		// clang-format off
-		String string = String("") +
-		"\n-=={ HELP MENU }==-" +
-		"\n\nAvailable commands:" +
-		"\n  > set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;" +
-		"\n  > get_motors_info" +
-		"\n  > write_speeds_to_eeprom" + 
-		"\n  > help" +
-		"\n  > info" +
-		"\n\nFor more information visit:" + 
-		"\nhttps://something.org";
-		// clang-format on
+		__characteristicTx.writeValue("\n-=={ HELP MENU }==-\n\nAvailable commands:");
+		__characteristicTx.writeValue("> set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;");
+		__characteristicTx.writeValue("> get_motors_info");
+		__characteristicTx.writeValue("> write_speeds_to_eeprom");
+		__characteristicTx.writeValue("> help");
+		__characteristicTx.writeValue("> info");
 
-		__characteristicTx.writeValue(string);
-		
 		return true;
 	} else if (strstr(command, "info") != NULL) {
 		printInfoMessage("Printing infos...");
@@ -223,13 +215,14 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		"\n-=={ INFORMATIONS }==-" +
 		"\n" +
 		"\n Version: v1.0.0" +
-		"\n Developer: Vincy-2515" +
+		"\n Developer: Vincenzo Scarso" +
 		"\n Github: https://github.com/Vincy-2515";
 		// clang-format on
 
 		__characteristicTx.writeValue(string);
-		
+
 		return true;
 	}
+
 	return false;
 }

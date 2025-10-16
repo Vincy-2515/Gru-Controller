@@ -29,6 +29,6 @@ typedef enum {
 
 class Motor;
 
-extern Motor motors[NUMBER_OF_MOTORS];
+extern Motor* motors[NUMBER_OF_MOTORS];
 
 #endif /* MOTORS_H */

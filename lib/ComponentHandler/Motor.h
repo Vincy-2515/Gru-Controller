@@ -3,8 +3,9 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <Preferences.h>
 #include <componentHandler.h>
-#include <eepromAddresses.h>
+#include <EepromNamespacesAndKeys.h>
 
 class Motor {
 private:
@@ -19,31 +20,46 @@ private:
 	byte __third_gear_speed;
 	byte __default_speed;
 
-	int __eeprom_address_first_gear_speed;
-	int __eeprom_address_second_gear_speed;
-	int __eeprom_address_third_gear_speed;
-	int __eeprom_address_default_speed;
+	String __EEPROM_NAMESPACE_MOTOR;
+	String __EEPROM_KEY_FIRST_GEAR_SPEED;
+	String __EEPROM_KEY_SECOND_GEAR_SPEED;
+	String __EEPROM_KEY_THIRD_GEAR_SPEED;
+	String __EEPROM_KEY_DEFAULT_SPEED;
 
 public:
+	Preferences motor_speeds;
+
 	Motor(String motor_name,
 	    int direction_controlling_pin1,
 	    int direction_controlling_pin2,
 	    int speed_controlling_pin,
-	    int first_gear_speed_eeprom_address,
-	    int second_gear_speed_eeprom_address,
-	    int third_gear_speed_eeprom_address,
-	    int default_speed_eeprom_address);
+	    String eeprom_namespace_motor,
+	    String eeprom_key_first_gear_speed,
+	    String eeprom_key_second_gear_speed,
+	    String eeprom_key_third_gear_speed,
+	    String eeprom_key_default_speed);
+
 	void updateValuesFromEeprom();
 	void transferValuesToEeprom();
+
 	void setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed);
-	void setFirstGearSpeed(byte first_gear_speed);
+	
 	byte getFirstGearSpeed();
-	void setSecondGearSpeed(byte second_gear_speed);
 	byte getSecondGearSpeed();
-	void setThirdGearSpeed(byte third_gear_speed);
 	byte getThirdGearSpeed();
-	void setDefaultSpeed(byte default_speed);
 	byte getDefaultSpeed();
+
+	void setFirstGearSpeed(byte first_gear_speed);
+	void setSecondGearSpeed(byte second_gear_speed);
+	void setThirdGearSpeed(byte third_gear_speed);
+	void setDefaultSpeed(byte default_speed);
+
+	const char* getEepromNamespaceMotor();
+	const char* getEepromKeyFirstGearSpeed();
+	const char* getEepromKeySecondGearSpeed();
+	const char* getEepromKeyThirdGearSpeed();
+	const char* getEepromKeyDefaultSpeed();
+
 	String toString();
 };
 

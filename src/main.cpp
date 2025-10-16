@@ -8,9 +8,10 @@
 
 void setup() {
 	Serial.begin(SERIAL_BAUD);
+
 	printInfoMessage("Starting setup procedure...");
 
-	componentSetup();
+	componentsSetup();
 	bleGruControllerSetup();
 	
 	printInfoMessage("Setup completed");

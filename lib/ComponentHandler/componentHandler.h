@@ -2,13 +2,17 @@
 #define COMPONENTHANDLER_H
 
 #include <Arduino.h>
-#include <EEPROM.h>
-#include <EepromAddresses.h>
-#include <logHandler.h>
+#include <EepromNamespacesAndKeys.h>
 #include <Motors.h>
+#include <Preferences.h>
+#include <logHandler.h>
 
-void componentSetup();
+#define EEPROM_MODE_READ_WRITE false
+#define EEPROM_MODE_READ true
+
+void componentsSetup();
 void blinkLedBuiltin(int ripetitions);
-void updateValueToEeprom(int address, byte value);
+void writeValueToEeprom(Preferences& preferences, const char* namespace_name, const char* key_name, byte value);
+byte readValueFromEeprom(Preferences& preferences, const char* namespace_name, const char* key_name);
 
 #endif

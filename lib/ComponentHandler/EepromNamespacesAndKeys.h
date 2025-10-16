@@ -1,9 +1,9 @@
 #ifndef EEPROM_ADDRESSES_H
 #define EEPROM_ADDRESSES_H
 
-/**********************************************************
+/*********************************************************
     EVERY NAMESPACE AND KEY MUST BE UNDER 15 CHARACTERS    
- **********************************************************/
+ *********************************************************/
 
 #define EEPROM_NAMESPACE_MOTOR_ARM "E_N_M_A"
 #define EEPROM_KEY_MOTOR_ARM_FIRST_GEAR_SPEED "E_K_M_A_F_G_S"

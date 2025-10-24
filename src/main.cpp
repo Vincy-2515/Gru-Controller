@@ -2,9 +2,10 @@
 #include <ArduinoBLE.h>
 #include <bleGruControllerHandler.h>
 #include <componentHandler.h>
+#include <eepromHandler.h>
 #include <logHandler.h>
 
-#define SERIAL_BAUD 115200
+#define SERIAL_BAUD (115200)
 
 void setup() {
 	Serial.begin(SERIAL_BAUD);
@@ -13,7 +14,7 @@ void setup() {
 
 	componentsSetup();
 	bleGruControllerSetup();
-	
+
 	printInfoMessage("Setup completed");
 }
 

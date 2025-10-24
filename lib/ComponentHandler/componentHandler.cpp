@@ -1,64 +1,12 @@
 #include "componentHandler.h"
-
-#define __EEPROM_KEY_INITIALIZATION "isInitialized"
+#include <Motors.h>
 
 void __pinsSetup();
-void __eepromSetup();
-void __motorsSetup();
+void __updateMotorsValuesFromEeprom();
 
 void componentsSetup() {
 	__pinsSetup();
-	__eepromSetup();
-	__motorsSetup();
-}
-
-void __pinsSetup() {
-	printInfoMessage("Starting pins setup procedure...");
-
-	pinMode(LED_BUILTIN, OUTPUT);
-	digitalWrite(LED_BUILTIN, LOW);
-
-	printInfoMessage("Pins setup procedure ended");
-}
-
-void __eepromSetup() {
-	printInfoMessage("Starting EEPROM setup procedure...");
-
-	for (Motor* m : motors) {
-		m->motor_speeds.begin(m->getEepromNamespaceMotor(), EEPROM_MODE_READ);
-
-		bool is_preferences_namespace_initialized = m->motor_speeds.isKey(__EEPROM_KEY_INITIALIZATION);
-
-		if (!is_preferences_namespace_initialized) {
-			printWarningMessage("Namespace: \"%s\" not initialized, initializing...", m->getEepromNamespaceMotor());
-
-			m->motor_speeds.end();
-			m->motor_speeds.begin(m->getEepromNamespaceMotor(), EEPROM_MODE_READ_WRITE);
-
-			m->motor_speeds.putUChar(m->getEepromKeyFirstGearSpeed(), 0);
-			m->motor_speeds.putUChar(m->getEepromKeySecondGearSpeed(), 0);
-			m->motor_speeds.putUChar(m->getEepromKeyThirdGearSpeed(), 0);
-			m->motor_speeds.putUChar(m->getEepromKeyDefaultSpeed(), 0);
-
-			m->motor_speeds.putBool(__EEPROM_KEY_INITIALIZATION, true);
-
-			m->motor_speeds.end();
-		}
-
-		m->motor_speeds.end();
-	}
-
-	printInfoMessage("EEPROM setup procedure ended");
-}
-
-void __motorsSetup() {
-	printInfoMessage("Starting motors setup procedure...");
-
-	for (Motor* m : motors) {
-		m->updateValuesFromEeprom();
-	}
-
-	printInfoMessage("Motors setup procedure ended");
+	__updateMotorsValuesFromEeprom();
 }
 
 void blinkLedBuiltin(int ripetitions) {
@@ -72,40 +20,59 @@ void blinkLedBuiltin(int ripetitions) {
 	}
 }
 
-void writeValueToEeprom(Preferences& preferences, const char* namespace_name, const char* key_name, byte value) {
-	if (!preferences.begin(namespace_name, EEPROM_MODE_READ_WRITE)) {
-		printErrorMessage("No value was written, couldn't access the namespace");
-		return;
-	}
+void updateMotorState(MotorId motor_id, Action action, Rotation rotation, Gear gear) {
+	Motor* m = motors[motor_id];
 
-	if (!preferences.isKey(key_name)) {
-		printErrorMessage("No value was written, inexistent key: \"%s\"", key_name);
-		return;
-	}
-
-	if (preferences.putUChar(key_name, value) == 0) {
-		printErrorMessage("No value was written, some error had occurred");
+	if (action == ACTION_NONE) {
+		if (m->getActiveBreaking() == true) {
+			digitalWrite(m->getDirectionControllingPin1(), HIGH);
+			digitalWrite(m->getDirectionControllingPin2(), HIGH);
+			digitalWrite(m->getSpeedControllingPin(), HIGH);
+		} else {
+			digitalWrite(m->getDirectionControllingPin1(), LOW);
+			digitalWrite(m->getDirectionControllingPin2(), LOW);
+			digitalWrite(m->getSpeedControllingPin(), LOW);
+		}
 	} else {
-		printInfoMessage("Wrote value: \"%d\" to key: \"%s\"", value, key_name);
+		if (rotation == ROTATION_DEFAULT) {
+			digitalWrite(m->getDirectionControllingPin1(), HIGH);
+			digitalWrite(m->getDirectionControllingPin2(), LOW);
+			digitalWrite(m->getSpeedControllingPin(), m->getSpeed(gear));
+		} else {
+			digitalWrite(m->getDirectionControllingPin1(), LOW);
+			digitalWrite(m->getDirectionControllingPin2(), HIGH);
+			digitalWrite(m->getSpeedControllingPin(), m->getSpeed(gear));
+		}
 	}
 
-	preferences.end();
+	printInfoMessage("Setted values {DIR_1: %d, DIR_2: %d, SPEED: %d} to %s pins",
+	    digitalRead(motors[motor_id]->getDirectionControllingPin1()),
+	    digitalRead(motors[motor_id]->getDirectionControllingPin2()),
+	    digitalRead(motors[motor_id]->getSpeedControllingPin()),
+	    motors[motor_id]->getMotorName());
 }
 
-byte readValueFromEeprom(Preferences& preferences, const char* namespace_name, const char* key_name) {
-	if (!preferences.begin(namespace_name, EEPROM_MODE_READ)) {
-		printErrorMessage("No value was read, couldn't access the namespace");
-		return 0;
+void __pinsSetup() {
+	printInfoMessage("Starting pins setup procedure...");
+
+	pinMode(LED_BUILTIN, OUTPUT);
+	digitalWrite(LED_BUILTIN, LOW);
+
+	for (Motor* m : motors) {
+		pinMode(m->getDirectionControllingPin1(), OUTPUT);
+		pinMode(m->getDirectionControllingPin2(), OUTPUT);
+		pinMode(m->getSpeedControllingPin(), OUTPUT);
 	}
 
-	if (!preferences.isKey(key_name)) {
-		printErrorMessage("No value was read, inexistent key: \"%s\"", key_name);
-		return 0;
+	printInfoMessage("Pins setup procedure ended");
+}
+
+void __updateMotorsValuesFromEeprom() {
+	printInfoMessage("Starting motors' values setup procedure...");
+
+	for (Motor* m : motors) {
+		m->updateValuesFromEeprom();
 	}
 
-	byte value = preferences.getUChar(key_name);
-
-	preferences.end();
-
-	return value;
+	printInfoMessage("Motors' values setup procedure ended");
 }

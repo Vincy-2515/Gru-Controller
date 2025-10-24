@@ -4,8 +4,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <Preferences.h>
-#include <componentHandler.h>
-#include <EepromNamespacesAndKeys.h>
+#include <types.h>
 
 class Motor {
 private:
@@ -19,15 +18,19 @@ private:
 	byte __second_gear_speed;
 	byte __third_gear_speed;
 	byte __default_speed;
+	bool __active_breaking;
 
 	String __EEPROM_NAMESPACE_MOTOR;
 	String __EEPROM_KEY_FIRST_GEAR_SPEED;
 	String __EEPROM_KEY_SECOND_GEAR_SPEED;
 	String __EEPROM_KEY_THIRD_GEAR_SPEED;
 	String __EEPROM_KEY_DEFAULT_SPEED;
+	String __EEPROM_KEY_ACTIVE_BREAKING;
+
+	void __initializeMotorSpeedsPreferences();
 
 public:
-	Preferences motor_speeds;
+	Preferences motor_speeds_preferences;
 
 	Motor(String motor_name,
 	    int direction_controlling_pin1,
@@ -37,13 +40,25 @@ public:
 	    String eeprom_key_first_gear_speed,
 	    String eeprom_key_second_gear_speed,
 	    String eeprom_key_third_gear_speed,
-	    String eeprom_key_default_speed);
+	    String eeprom_key_default_speed,
+	    String eeprom_key_active_breaking);
 
 	void updateValuesFromEeprom();
 	void transferValuesToEeprom();
 
 	void setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed);
-	
+
+	byte getSpeed(Gear gear);
+
+	const char* getMotorName();
+
+	int getDirectionControllingPin1();
+	int getDirectionControllingPin2();
+	int getSpeedControllingPin();
+
+	bool getActiveBreaking();
+	void setActiveBreaking(bool active_breaking);
+
 	byte getFirstGearSpeed();
 	byte getSecondGearSpeed();
 	byte getThirdGearSpeed();
@@ -59,6 +74,7 @@ public:
 	const char* getEepromKeySecondGearSpeed();
 	const char* getEepromKeyThirdGearSpeed();
 	const char* getEepromKeyDefaultSpeed();
+	const char* getEepromKeyActiveBreaking();
 
 	String toString();
 };

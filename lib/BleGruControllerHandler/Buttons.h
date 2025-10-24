@@ -3,14 +3,11 @@
 
 #include <Arduino.h>
 #include <Button.h>
-#include <Motors.h>
+#include <types.h>
 
 #define NUMBER_OF_BUTTONS (8)
 
-typedef enum {
-	BUTTON_PRESSED,
-	BUTTON_RELEASED
-} ButtonStatus;
+// enums moved to ComponentHandler/types.h
 
 extern Button buttons[NUMBER_OF_BUTTONS];
 

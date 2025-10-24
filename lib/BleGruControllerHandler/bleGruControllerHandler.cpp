@@ -1,4 +1,5 @@
 #include <bleGruControllerHandler.h>
+#include <Motors.h>
 
 BLEService __serviceUart(UUID_SERVICE_UART);
 
@@ -153,6 +154,28 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		        &motor_trolley_first_gear_speed, &motor_trolley_second_gear_speed, &motor_trolley_third_gear_speed, &motor_trolley_default_speed,
 		        &motor_coil_first_gear_speed, &motor_coil_second_gear_speed, &motor_coil_third_gear_speed, &motor_coil_default_speed)
 		    != EOF) {
+
+			if ((motor_arm_first_gear_speed < 0 || motor_arm_first_gear_speed > 255)
+			    || (motor_arm_second_gear_speed < 0 || motor_arm_second_gear_speed > 255)
+			    || (motor_arm_third_gear_speed < 0 || motor_arm_third_gear_speed > 255)
+			    || (motor_arm_default_speed < 0 || motor_arm_default_speed > 255)
+
+			    || (motor_trolley_first_gear_speed < 0 || motor_trolley_first_gear_speed > 255)
+			    || (motor_trolley_second_gear_speed < 0 || motor_trolley_second_gear_speed > 255)
+			    || (motor_trolley_third_gear_speed < 0 || motor_trolley_third_gear_speed > 255)
+			    || (motor_trolley_default_speed < 0 || motor_trolley_default_speed > 255)
+
+			    || (motor_coil_first_gear_speed < 0 || motor_coil_first_gear_speed > 255)
+			    || (motor_coil_second_gear_speed < 0 || motor_coil_second_gear_speed > 255)
+			    || (motor_coil_third_gear_speed < 0 || motor_coil_third_gear_speed > 255)
+			    || (motor_coil_default_speed < 0 || motor_coil_default_speed > 255)) {
+
+				__characteristicTx.writeValue("Only values between the range 0-255 are accepted, value not updated");
+				printErrorMessage("Only values between the range 0-255 are accepted, value not updated");
+
+				return false;
+			}
+
 			printInfoMessage("Setting motors speeds...");
 
 			motors[MOTOR_ARM]->setAllSpeeds(
@@ -175,6 +198,8 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 
 			return true;
 		}
+
+		return false;
 	} else if (strstr(command, "get_motors_info") != NULL) {
 		printInfoMessage("Printing motors informations...");
 
@@ -196,6 +221,39 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		motors[MOTOR_COIL]->transferValuesToEeprom();
 
 		return true;
+	} else if (strstr(command, "active_breaking") != NULL) {
+		printInfoMessage("Changing active breaking preference...");
+
+		byte motor_arm_active_breaking;
+		byte motor_trolley_active_breaking;
+		byte motor_coil_active_breaking;
+
+		if (sscanf(command, "active_breaking %d,%d,%d",
+		        &motor_arm_active_breaking, &motor_trolley_active_breaking, &motor_coil_active_breaking)
+		    != EOF) {
+
+			if ((motor_arm_active_breaking < 0 || motor_arm_active_breaking > 1)
+			    || (motor_trolley_active_breaking < 0 || motor_trolley_active_breaking > 1)
+			    || (motor_coil_active_breaking < 0 || motor_coil_active_breaking > 1)) {
+
+				__characteristicTx.writeValue("Only values between the range 0-1 are accepted, value not updated");
+				printErrorMessage("Only values between the range 0-1 are accepted, value not updated");
+
+				return false;
+			}
+
+			bool motor_arm_active_breaking_value = motor_arm_active_breaking == 1 ? true : false;
+			bool motor_trolley_active_breaking_value = motor_trolley_active_breaking == 1 ? true : false;
+			bool motor_coil_active_breaking_value = motor_coil_active_breaking == 1 ? true : false;
+
+			motors[MOTOR_ARM]->setActiveBreaking(motor_arm_active_breaking_value);
+			motors[MOTOR_TROLLEY]->setActiveBreaking(motor_trolley_active_breaking_value);
+			motors[MOTOR_COIL]->setActiveBreaking(motor_coil_active_breaking_value);
+
+			return true;
+		}
+
+		return false;
 	} else if (strstr(command, "help") != NULL) {
 		printInfoMessage("Printing help informations...");
 
@@ -203,6 +261,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		__characteristicTx.writeValue("> set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;");
 		__characteristicTx.writeValue("> get_motors_info");
 		__characteristicTx.writeValue("> write_speeds_to_eeprom");
+		__characteristicTx.writeValue("> active_breaking a,b,c");
 		__characteristicTx.writeValue("> help");
 		__characteristicTx.writeValue("> info");
 

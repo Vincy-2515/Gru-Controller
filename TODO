@@ -1,0 +1,5 @@
++ Mettere inizializzazione delle "Preferences" di ogni motore dentro un metodo della classe Motor
+> Aggiungere un comando per la gestione dell'"active breaking"
+> Completare la parte delle azioni che devono performare i pulsanti
+> Creare una versione "Templated" delle funzioni read/write to/from EEPROM
+> Gestire in modo migliore i comandi

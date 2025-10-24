@@ -1,5 +1,9 @@
 + Mettere inizializzazione delle "Preferences" di ogni motore dentro un metodo della classe Motor
-> Aggiungere un comando per la gestione dell'"active breaking"
-> Completare la parte delle azioni che devono performare i pulsanti
++ Aggiungere un comando per la gestione dell'"active breaking"
++ Completare la parte delle azioni che devono performare i pulsanti
+> cambiare comando "write_speeds_to_eeprom" in "write_motor_preferences_to_eeprom"
+> risolvere il problema dei controlli di COIL e TROLLEY invertiti
+> risolvere il problema dei valori che non vengono scritti in EEPROM
+> risolvere il problema della velocità erronea: {DIR_1: 1, DIR_2: 0, SPEED: 1}
 > Creare una versione "Templated" delle funzioni read/write to/from EEPROM
 > Gestire in modo migliore i comandi

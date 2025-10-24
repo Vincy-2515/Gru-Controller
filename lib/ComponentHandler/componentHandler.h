@@ -2,10 +2,10 @@
 #define COMPONENTHANDLER_H
 
 #include <Arduino.h>
-#include <types.h>
 #include <Preferences.h>
 #include <eepromHandler.h>
 #include <logHandler.h>
+#include <types.h>
 
 void componentsSetup();
 void blinkLedBuiltin(int ripetitions);

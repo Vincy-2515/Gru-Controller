@@ -26,9 +26,9 @@ void updateMotorState(MotorId motor_id, Action action, Rotation rotation, Gear g
 
 	if (action == ACTION_NONE) {
 		if (motor->getActiveBreaking() == true) {
-			__sendValues(motor, HIGH, HIGH, HIGH);
+			__sendValues(motor, HIGH, HIGH, motor->getBreakingForce());
 		} else {
-			__sendValues(motor, LOW, LOW, LOW);
+			__sendValues(motor, LOW, LOW, motor->getBreakingForce());
 		}
 	} else {
 		if (rotation == ROTATION_DEFAULT) {

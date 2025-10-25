@@ -9,7 +9,7 @@
   - [x] effettuare tutto il setup necessario per canali e pin PWM
 - [ ] aggiungere maggiore controllo per la gestione dei tasti
 - [ ] aggiungere nuovo metodo nella classe "Motor" per l'eliminazione dei valori salvati in memoria
-- [ ] risolvere il problema dei valori che non vengono scritti in EEPROM
+- [x] risolvere il problema dei valori che non vengono scritti in EEPROM
 
 ### SECONDARIE
 - [ ] Riorganizzazione della classe "Motor":

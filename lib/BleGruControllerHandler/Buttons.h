@@ -7,8 +7,6 @@
 
 #define NUMBER_OF_BUTTONS (8)
 
-// enums moved to ComponentHandler/types.h
-
 extern Button buttons[NUMBER_OF_BUTTONS];
 
 #endif

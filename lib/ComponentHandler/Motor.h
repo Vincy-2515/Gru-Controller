@@ -2,7 +2,6 @@
 #define MOTOR_H
 
 #include <Arduino.h>
-#include <EEPROM.h>
 #include <Preferences.h>
 #include <types.h>
 
@@ -13,6 +12,10 @@ private:
 	int __direction_controlling_pin_1; // IN1 or IN2 or IN3 or IN4 of the L298N
 	int __direction_controlling_pin_2; // IN1 or IN2 or IN3 or IN4 of the L298N
 	int __speed_controlling_pin; // ENA or ENB of the L298N
+
+	int __speed_pwm_channel_mumber; // PWM channel associated to the speed controlling pin
+	int __speed_pwm_channel_frequency; // PWM channel frequency
+	int __speed_pwm_channel_resolution; // PWM channel resolution (number of bits)
 
 	byte __first_gear_speed;
 	byte __second_gear_speed;
@@ -27,21 +30,26 @@ private:
 	String __EEPROM_KEY_DEFAULT_SPEED;
 	String __EEPROM_KEY_ACTIVE_BREAKING;
 
-	void __initializeMotorSpeedsPreferences();
+	bool __areAllKeyInitialized();
 
 public:
-	Preferences motor_speeds_preferences;
+	Preferences motor_preferences;
 
 	Motor(String motor_name,
 	    int direction_controlling_pin1,
 	    int direction_controlling_pin2,
 	    int speed_controlling_pin,
+	    int speed_pwm_channel_number,
+	    int speed_pwm_channel_frequency,
+	    int speed_pwm_channel_resolution,
 	    String eeprom_namespace_motor,
 	    String eeprom_key_first_gear_speed,
 	    String eeprom_key_second_gear_speed,
 	    String eeprom_key_third_gear_speed,
 	    String eeprom_key_default_speed,
 	    String eeprom_key_active_breaking);
+
+	void initializeMotorSpeedsPreferences();
 
 	void updateValuesFromEeprom();
 	void transferValuesToEeprom();
@@ -55,6 +63,10 @@ public:
 	int getDirectionControllingPin1();
 	int getDirectionControllingPin2();
 	int getSpeedControllingPin();
+
+	int getSpeedPwmChannelNumber();
+	int getSpeedPwmChannelFrequency();
+	int getSpeedPwmChannelResolution();
 
 	bool getActiveBreaking();
 	void setActiveBreaking(bool active_breaking);

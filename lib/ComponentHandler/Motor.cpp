@@ -1,11 +1,16 @@
 #include <Motor.h>
+
 #include <eepromHandler.h>
+#include <logHandler.h>
 
 Motor::Motor(
     String motor_name,
     int direction_controlling_pin1,
     int direction_controlling_pin2,
     int speed_controlling_pin,
+    int speed_pwm_channel_number,
+    int speed_pwm_channel_frequency,
+    int speed_pwm_channel_resolution,
     String eeprom_namespace_motor,
     String eeprom_key_first_gear_speed,
     String eeprom_key_second_gear_speed,
@@ -19,30 +24,66 @@ Motor::Motor(
 	this->__direction_controlling_pin_2 = direction_controlling_pin2;
 	this->__speed_controlling_pin = speed_controlling_pin;
 
+	this->__speed_pwm_channel_mumber = speed_pwm_channel_number;
+	this->__speed_pwm_channel_frequency = speed_pwm_channel_frequency;
+	this->__speed_pwm_channel_resolution = speed_pwm_channel_resolution;
+
+	this->__first_gear_speed = 0;
+	this->__second_gear_speed = 0;
+	this->__third_gear_speed = 0;
+	this->__default_speed = 0;
+	this->__active_breaking = false;
+
 	this->__EEPROM_NAMESPACE_MOTOR = eeprom_namespace_motor;
 	this->__EEPROM_KEY_FIRST_GEAR_SPEED = eeprom_key_first_gear_speed;
 	this->__EEPROM_KEY_SECOND_GEAR_SPEED = eeprom_key_second_gear_speed;
 	this->__EEPROM_KEY_THIRD_GEAR_SPEED = eeprom_key_third_gear_speed;
 	this->__EEPROM_KEY_DEFAULT_SPEED = eeprom_key_default_speed;
 	this->__EEPROM_KEY_ACTIVE_BREAKING = eeprom_key_active_breaking;
+}
 
-	this->__initializeMotorSpeedsPreferences();
+void Motor::initializeMotorSpeedsPreferences() {
+	// NOTE: "Preferences.begin()" MUST NOT be executed inside Objects' constructors
+	if (!this->motor_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ)) {
+		printErrorMessage("\"motor_preferences\" has not been initialized");
+		return;
+	}
+
+	if (!this->__areAllKeyInitialized()) {
+		printWarningMessage("All or some keys of the namespace \"%s\" are not initialized, initializing...", this->getEepromNamespaceMotor());
+
+		this->motor_preferences.end();
+		if (!this->motor_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ)) {
+			printErrorMessage("\"motor_preferences\" has not been initialized");
+			return;
+		}
+
+		this->motor_preferences.putUChar(this->getEepromKeyFirstGearSpeed(), 0);
+		this->motor_preferences.putUChar(this->getEepromKeySecondGearSpeed(), 0);
+		this->motor_preferences.putUChar(this->getEepromKeyThirdGearSpeed(), 0);
+		this->motor_preferences.putUChar(this->getEepromKeyDefaultSpeed(), 0);
+		this->motor_preferences.putBool(this->getEepromKeyActiveBreaking(), false);
+
+		this->motor_preferences.end();
+	}
+
+	this->motor_preferences.end();
 }
 
 void Motor::updateValuesFromEeprom() {
-	this->setFirstGearSpeed(readByteValueFromEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed()));
-	this->setSecondGearSpeed(readByteValueFromEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed()));
-	this->setThirdGearSpeed(readByteValueFromEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed()));
-	this->setDefaultSpeed(readByteValueFromEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed()));
-	this->setActiveBreaking(readBoolValueFromEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking()));
+	this->setFirstGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed()));
+	this->setSecondGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed()));
+	this->setThirdGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed()));
+	this->setDefaultSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed()));
+	this->setActiveBreaking(readBoolValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking()));
 }
 
 void Motor::transferValuesToEeprom() {
-	writeByteValueToEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed(), this->getFirstGearSpeed());
-	writeByteValueToEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed(), this->getSecondGearSpeed());
-	writeByteValueToEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed(), this->getThirdGearSpeed());
-	writeByteValueToEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed(), this->getDefaultSpeed());
-	writeByteValueToEeprom(this->motor_speeds_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking(), this->getActiveBreaking());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed(), this->getFirstGearSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed(), this->getSecondGearSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed(), this->getThirdGearSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed(), this->getDefaultSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking(), this->getActiveBreaking());
 }
 
 void Motor::setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed) {
@@ -71,9 +112,9 @@ const char* Motor::getMotorName() {
 	return this->__motor_name.c_str();
 }
 
-/*===========================
-    GETTERS OF PINS NUMBERS
-  ===========================*/
+/*============================
+    GETTERS OF PINS' NUMBERS
+  ============================*/
 
 int Motor::getDirectionControllingPin1() {
 	return this->__direction_controlling_pin_1;
@@ -85,6 +126,22 @@ int Motor::getDirectionControllingPin2() {
 
 int Motor::getSpeedControllingPin() {
 	return this->__speed_controlling_pin;
+}
+
+/*===========================
+    GETTERS OF PWM SETTINGS
+  ===========================*/
+
+int Motor::getSpeedPwmChannelNumber() {
+	return this->__speed_pwm_channel_mumber;
+}
+
+int Motor::getSpeedPwmChannelFrequency() {
+	return this->__speed_pwm_channel_frequency;
+}
+
+int Motor::getSpeedPwmChannelResolution() {
+	return this->__speed_pwm_channel_resolution;
 }
 
 /*===================================================
@@ -171,9 +228,9 @@ const char* Motor::getEepromKeyActiveBreaking() {
 String Motor::toString() {
 	return (
 		this->__motor_name + ": {" + 
-		this->__direction_controlling_pin_1 + ", " + 
-		this->__direction_controlling_pin_2 + ", " + 
-		this->__speed_controlling_pin + ", " + 
+		"DIR_PIN_1: " + this->__direction_controlling_pin_1 + ", " + 
+		"DIR_PIN_2: " + this->__direction_controlling_pin_2 + ", " + 
+		"SPEED_PIN: " + this->__speed_controlling_pin + ", " + 
 		this->__EEPROM_NAMESPACE_MOTOR + ": [" +
 		this->__EEPROM_KEY_FIRST_GEAR_SPEED + ": " +  this->__first_gear_speed + ", " +
 		this->__EEPROM_KEY_SECOND_GEAR_SPEED + ": " +  this->__second_gear_speed + ", " +
@@ -184,27 +241,11 @@ String Motor::toString() {
 	}
 // clang-format on
 
-void Motor::__initializeMotorSpeedsPreferences() {
-	this->motor_speeds_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ);
-
-	bool is_preferences_namespace_initialized = this->motor_speeds_preferences.isKey(EEPROM_KEY_INITIALIZATION);
-
-	if (!is_preferences_namespace_initialized) {
-		printWarningMessage("Namespace \"%s\" not initialized, initializing...", this->getEepromNamespaceMotor());
-
-		this->motor_speeds_preferences.end();
-		this->motor_speeds_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ_WRITE);
-
-		this->motor_speeds_preferences.putUChar(this->getEepromKeyFirstGearSpeed(), 0);
-		this->motor_speeds_preferences.putUChar(this->getEepromKeySecondGearSpeed(), 0);
-		this->motor_speeds_preferences.putUChar(this->getEepromKeyThirdGearSpeed(), 0);
-		this->motor_speeds_preferences.putUChar(this->getEepromKeyDefaultSpeed(), 0);
-		this->motor_speeds_preferences.putBool(this->getEepromKeyActiveBreaking(), false);
-
-		this->motor_speeds_preferences.putBool(EEPROM_KEY_INITIALIZATION, true);
-
-		this->motor_speeds_preferences.end();
-	}
-
-	this->motor_speeds_preferences.end();
+bool Motor::__areAllKeyInitialized() {
+	return (
+	    this->motor_preferences.isKey(getEepromKeyFirstGearSpeed())
+	    && this->motor_preferences.isKey(getEepromKeySecondGearSpeed())
+	    && this->motor_preferences.isKey(getEepromKeyThirdGearSpeed())
+	    && this->motor_preferences.isKey(getEepromKeyDefaultSpeed())
+	    && this->motor_preferences.isKey(getEepromKeyActiveBreaking()));
 }

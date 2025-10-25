@@ -213,7 +213,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		printInfoMessage(motors[MOTOR_COIL]->toString().c_str());
 
 		return true;
-	} else if (strstr(command, "write_speeds_to_eeprom") != NULL) {
+	} else if (strstr(command, "write_motor_preferences_to_eeprom") != NULL) {
 		printInfoMessage("Writing values to EEPROM memory...");
 
 		motors[MOTOR_ARM]->transferValuesToEeprom();
@@ -260,7 +260,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		__characteristicTx.writeValue("\n-=={ HELP MENU }==-\n\nAvailable commands:");
 		__characteristicTx.writeValue("> set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;");
 		__characteristicTx.writeValue("> get_motors_info");
-		__characteristicTx.writeValue("> write_speeds_to_eeprom");
+		__characteristicTx.writeValue("> write_motor_preferences_to_eeprom");
 		__characteristicTx.writeValue("> active_breaking a,b,c");
 		__characteristicTx.writeValue("> help");
 		__characteristicTx.writeValue("> info");

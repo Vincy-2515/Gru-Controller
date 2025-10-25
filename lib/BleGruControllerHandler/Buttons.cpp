@@ -48,9 +48,9 @@ Button buttons[NUMBER_OF_BUTTONS] = {
 
 static void __handleButtonArrowUp(int btn_status) {
 	if (__is_macro4_pressed) {
-		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_DEFAULT, __current_gear);
-	} else {
 		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_COIL, ACTION_ROTATE_COIL, ROTATION_DEFAULT, __current_gear);
+	} else {
+		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_DEFAULT, __current_gear);
 	}
 }
 
@@ -60,9 +60,9 @@ static void __handleButtonArrowRight(int btn_status) {
 
 static void __handleButtonArrowDown(int btn_status) {
 	if (__is_macro4_pressed) {
-		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_INVERSE, __current_gear);
-	} else {
 		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_COIL, ACTION_ROTATE_COIL, ROTATION_INVERSE, __current_gear);
+	} else {
+		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_INVERSE, __current_gear);
 	}
 }
 

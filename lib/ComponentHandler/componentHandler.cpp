@@ -1,6 +1,7 @@
 #include "componentHandler.h"
 #include <Motors.h>
 
+void __sendValues(Motor* motor, uint8_t direction1_value, uint8_t direction2_value, uint8_t speed_value);
 void __pinsSetup();
 void __updateMotorsValuesFromEeprom();
 
@@ -21,35 +22,33 @@ void blinkLedBuiltin(int ripetitions) {
 }
 
 void updateMotorState(MotorId motor_id, Action action, Rotation rotation, Gear gear) {
-	Motor* m = motors[motor_id];
+	Motor* motor = motors[motor_id];
 
 	if (action == ACTION_NONE) {
-		if (m->getActiveBreaking() == true) {
-			digitalWrite(m->getDirectionControllingPin1(), HIGH);
-			digitalWrite(m->getDirectionControllingPin2(), HIGH);
-			digitalWrite(m->getSpeedControllingPin(), HIGH);
+		if (motor->getActiveBreaking() == true) {
+			__sendValues(motor, HIGH, HIGH, HIGH);
 		} else {
-			digitalWrite(m->getDirectionControllingPin1(), LOW);
-			digitalWrite(m->getDirectionControllingPin2(), LOW);
-			digitalWrite(m->getSpeedControllingPin(), LOW);
+			__sendValues(motor, LOW, LOW, LOW);
 		}
 	} else {
 		if (rotation == ROTATION_DEFAULT) {
-			digitalWrite(m->getDirectionControllingPin1(), HIGH);
-			digitalWrite(m->getDirectionControllingPin2(), LOW);
-			digitalWrite(m->getSpeedControllingPin(), m->getSpeed(gear));
+			__sendValues(motor, HIGH, LOW, motor->getSpeed(gear));
 		} else {
-			digitalWrite(m->getDirectionControllingPin1(), LOW);
-			digitalWrite(m->getDirectionControllingPin2(), HIGH);
-			digitalWrite(m->getSpeedControllingPin(), m->getSpeed(gear));
+			__sendValues(motor, LOW, HIGH, motor->getSpeed(gear));
 		}
 	}
+}
+
+void __sendValues(Motor* motor, uint8_t direction1_value, uint8_t direction2_value, uint8_t speed_value) {
+	digitalWrite(motor->getDirectionControllingPin1(), direction1_value);
+	digitalWrite(motor->getDirectionControllingPin2(), direction2_value);
+	analogWrite(motor->getSpeedControllingPin(), speed_value);
 
 	printInfoMessage("Setted values {DIR_1: %d, DIR_2: %d, SPEED: %d} to %s pins",
-	    digitalRead(motors[motor_id]->getDirectionControllingPin1()),
-	    digitalRead(motors[motor_id]->getDirectionControllingPin2()),
-	    digitalRead(motors[motor_id]->getSpeedControllingPin()),
-	    motors[motor_id]->getMotorName());
+	    direction1_value,
+	    direction2_value,
+	    speed_value,
+	    motor->getMotorName());
 }
 
 void __pinsSetup() {
@@ -58,10 +57,16 @@ void __pinsSetup() {
 	pinMode(LED_BUILTIN, OUTPUT);
 	digitalWrite(LED_BUILTIN, LOW);
 
-	for (Motor* m : motors) {
-		pinMode(m->getDirectionControllingPin1(), OUTPUT);
-		pinMode(m->getDirectionControllingPin2(), OUTPUT);
-		pinMode(m->getSpeedControllingPin(), OUTPUT);
+	for (Motor* motor : motors) {
+		pinMode(motor->getDirectionControllingPin1(), OUTPUT);
+		pinMode(motor->getDirectionControllingPin2(), OUTPUT);
+		pinMode(motor->getSpeedControllingPin(), OUTPUT);
+
+		ledcAttachChannel(
+		    motor->getSpeedControllingPin(),
+		    motor->getSpeedPwmChannelFrequency(),
+		    motor->getSpeedPwmChannelResolution(),
+		    motor->getSpeedPwmChannelNumber());
 	}
 
 	printInfoMessage("Pins setup procedure ended");
@@ -70,8 +75,8 @@ void __pinsSetup() {
 void __updateMotorsValuesFromEeprom() {
 	printInfoMessage("Starting motors' values setup procedure...");
 
-	for (Motor* m : motors) {
-		m->updateValuesFromEeprom();
+	for (Motor* motor : motors) {
+		motor->updateValuesFromEeprom();
 	}
 
 	printInfoMessage("Motors' values setup procedure ended");

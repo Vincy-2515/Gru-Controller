@@ -1,5 +1,17 @@
 #include <eepromHandler.h>
 
+#include <Motors.h>
+#include <Preferences.h>
+#include <esp_err.h>
+#include <logHandler.h>
+#include <nvs_flash.h>
+
+void __motorsPreferencesSetup();
+
+void eepromSetup() {
+	__motorsPreferencesSetup();
+}
+
 void writeBoolValueToEeprom(Preferences& preferences, const char* namespace_name, const char* key_name, bool value) {
 	if (!preferences.begin(namespace_name, EEPROM_MODE_READ_WRITE)) {
 		printErrorMessage("No value was written, couldn't access the namespace \"%s\"", namespace_name);
@@ -74,4 +86,10 @@ byte readByteValueFromEeprom(Preferences& preferences, const char* namespace_nam
 	preferences.end();
 
 	return value;
+}
+
+void __motorsPreferencesSetup() {
+	for (Motor* m : motors) {
+		m->initializeMotorSpeedsPreferences();
+	}
 }

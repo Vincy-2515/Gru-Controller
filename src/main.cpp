@@ -12,6 +12,7 @@ void setup() {
 
 	printInfoMessage("Starting setup procedure...");
 
+	eepromSetup();
 	componentsSetup();
 	bleGruControllerSetup();
 

@@ -16,7 +16,7 @@
 #define UUID_CHARACTERISTIC_TX "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 
 #define RX_VALUE_SIZE (128)
-#define TX_VALUE_SIZE (128) // highest value is 238 (not sure)
+#define TX_VALUE_SIZE (192) // highest value is 238 (not sure)
 
 void bleGruControllerSetup();
 void bleGruControllerLoop();

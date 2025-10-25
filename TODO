@@ -1,9 +1,15 @@
-+ Mettere inizializzazione delle "Preferences" di ogni motore dentro un metodo della classe Motor
-+ Aggiungere un comando per la gestione dell'"active breaking"
-+ Completare la parte delle azioni che devono performare i pulsanti
-> cambiare comando "write_speeds_to_eeprom" in "write_motor_preferences_to_eeprom"
-> risolvere il problema dei controlli di COIL e TROLLEY invertiti
-> risolvere il problema dei valori che non vengono scritti in EEPROM
-> risolvere il problema della velocità erronea: {DIR_1: 1, DIR_2: 0, SPEED: 1}
-> Creare una versione "Templated" delle funzioni read/write to/from EEPROM
-> Gestire in modo migliore i comandi
+- [x] Mettere inizializzazione delle "Preferences" di ogni motore dentro un metodo della classe Motor
+- [x] Aggiungere un comando per la gestione dell'"active breaking"
+- [x] Completare la parte delle azioni che devono performare i pulsanti
+- [x] cambiare comando "write_speeds_to_eeprom" in "write_motor_preferences_to_eeprom"
+- [x] risolvere il problema dei controlli di COIL e TROLLEY invertiti
+- [x] risolvere il problema della velocità erronea:
+  - [x] creare metodi e variabili nella classe "Motor" per gestire il canale PWM per il controllo delle velocita, 
+  - [x] effettuare tutto il setup necessario per canali e pin PWM
+- [ ] risolvere il problema dei valori che non vengono scritti in EEPROM
+- [ ] Riorganizzazione della classe "Motor":
+  - [ ] Aggiungere sottoclassi alla classe "Motor" per organizzarla meglio
+  - [ ] aggiornare "toString"
+- [ ] Creare una funzione per l'invio di messaggi sia in "Serial" che in "__characteristicTx"
+- [ ] Creare una versione "Templated" delle funzioni read/write to/from EEPROM
+- [ ] Gestire in modo migliore i comandi

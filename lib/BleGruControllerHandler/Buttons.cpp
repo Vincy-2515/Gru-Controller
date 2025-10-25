@@ -4,6 +4,7 @@
 static Action __current_action = ACTION_NONE;
 static Rotation __current_rotation = ROTATION_DEFAULT;
 static Gear __current_gear = GEAR_DEFAULT;
+static int __currently_active_motor_id = -1;
 static bool __is_macro4_pressed = false;
 
 static void __handleButtonArrowUp(int btn_status);
@@ -109,6 +110,8 @@ static void __checkButtonStatusAndUpdateActionAndRotation(int btn_status, MotorI
 static void __updateActionAndRotation(MotorId motor_id, Action action, Rotation rotation, Gear gear) {
 	if ((action != ACTION_NONE) && (__current_action != ACTION_NONE)) {
 		return;
+	} else if ((__currently_active_motor_id != -1) && (__currently_active_motor_id != motor_id) && (action != ACTION_NONE)) {
+		return;
 	}
 
 	printInfoMessage("motor_state: {current: [ACTION: %d, ROTATION: %d, GEAR: %d], new: [ACTION: %d, ROTATION: %d, GEAR: %d], MACRO_4: %d}", __current_action, __current_rotation, __current_gear, action, rotation, gear, __is_macro4_pressed);
@@ -117,6 +120,7 @@ static void __updateActionAndRotation(MotorId motor_id, Action action, Rotation 
 
 	__current_action = action;
 	__current_rotation = rotation;
+	__currently_active_motor_id = (action == ACTION_NONE) ? -1 : motor_id;
 }
 
 static void __updateGear(int btn_status, Gear gear) {

@@ -22,6 +22,7 @@ private:
 	byte __third_gear_speed;
 	byte __default_speed;
 	bool __active_breaking;
+	byte __breaking_force;
 
 	String __EEPROM_NAMESPACE_MOTOR;
 	String __EEPROM_KEY_FIRST_GEAR_SPEED;
@@ -29,6 +30,7 @@ private:
 	String __EEPROM_KEY_THIRD_GEAR_SPEED;
 	String __EEPROM_KEY_DEFAULT_SPEED;
 	String __EEPROM_KEY_ACTIVE_BREAKING;
+	String __EEPROM_KEY_BREAKING_FORCE;
 
 	bool __areAllKeyInitialized();
 
@@ -47,7 +49,8 @@ public:
 	    String eeprom_key_second_gear_speed,
 	    String eeprom_key_third_gear_speed,
 	    String eeprom_key_default_speed,
-	    String eeprom_key_active_breaking);
+	    String eeprom_key_active_breaking,
+	    String eeprom_key_breaking_force);
 
 	void initializeMotorSpeedsPreferences();
 
@@ -71,6 +74,9 @@ public:
 	bool getActiveBreaking();
 	void setActiveBreaking(bool active_breaking);
 
+	byte getBreakingForce();
+	void setBreakingForce(byte breaking_force);
+
 	byte getFirstGearSpeed();
 	byte getSecondGearSpeed();
 	byte getThirdGearSpeed();
@@ -87,6 +93,7 @@ public:
 	const char* getEepromKeyThirdGearSpeed();
 	const char* getEepromKeyDefaultSpeed();
 	const char* getEepromKeyActiveBreaking();
+	const char* getEepromKeyBreakingForce();
 
 	String toString();
 };

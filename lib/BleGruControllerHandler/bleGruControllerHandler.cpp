@@ -40,7 +40,13 @@ void bleGruControllerSetup() {
 	__characteristicTx.writeValue("");
 
 	BLE.addService(__serviceUart);
-	BLE.setAdvertisedService(__serviceUart);
+
+	if (!BLE.setAdvertisedService(__serviceUart)) {
+		while (true) {
+			printErrorMessage("Advertising failed starting, press the reset button to recover");
+			blinkLedBuiltin(1);
+		}
+	}
 
 	if (!BLE.advertise()) {
 		printErrorMessage("Advertising failed starting, press the reset button to recover");
@@ -85,14 +91,8 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 	}
 
 	if (!is_command_recognized) {
-		snprintf(msg_buffer,
-		    TX_VALUE_SIZE,
-		    "Command unrecognized: %s"
-		    "\nType \"help\" for help",
-		    command);
-
-		printErrorMessage(msg_buffer);
-		__characteristicTx.writeValue(msg_buffer);
+		printErrorMessage("Command unrecognized: %s", command);
+		__characteristicTx.writeValue("Command unrecognized, type \"help\" for help");
 	}
 }
 
@@ -228,8 +228,13 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		byte motor_trolley_active_breaking;
 		byte motor_coil_active_breaking;
 
-		if (sscanf(command, "active_breaking %d,%d,%d",
-		        &motor_arm_active_breaking, &motor_trolley_active_breaking, &motor_coil_active_breaking)
+		byte motor_arm_breaking_force;
+		byte motor_trolley_breaking_force;
+		byte motor_coil_breaking_force;
+
+		if (sscanf(command, "active_breaking %d,%d,%d; %d,%d,%d;",
+		        &motor_arm_active_breaking, &motor_trolley_active_breaking, &motor_coil_active_breaking,
+		        &motor_arm_breaking_force, &motor_trolley_breaking_force, &motor_coil_breaking_force)
 		    != EOF) {
 
 			if ((motor_arm_active_breaking < 0 || motor_arm_active_breaking > 1)
@@ -238,6 +243,15 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 
 				__characteristicTx.writeValue("Only values between the range 0-1 are accepted, value not updated");
 				printErrorMessage("Only values between the range 0-1 are accepted, value not updated");
+
+				return false;
+			}
+			if ((motor_arm_breaking_force < 0 || motor_arm_breaking_force > 254)
+			    || (motor_trolley_breaking_force < 0 || motor_trolley_breaking_force > 254)
+			    || (motor_coil_breaking_force < 0 || motor_coil_breaking_force > 254)) { //254 because 255 outputs 0 for some reason
+
+				__characteristicTx.writeValue("Only values between the range 0-254 are accepted for breaking force, value not updated");
+				printErrorMessage("Only values between the range 0-254 are accepted for breaking force, value not updated");
 
 				return false;
 			}
@@ -250,6 +264,10 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 			motors[MOTOR_TROLLEY]->setActiveBreaking(motor_trolley_active_breaking_value);
 			motors[MOTOR_COIL]->setActiveBreaking(motor_coil_active_breaking_value);
 
+			motors[MOTOR_ARM]->setBreakingForce(motor_arm_breaking_force);
+			motors[MOTOR_TROLLEY]->setBreakingForce(motor_trolley_breaking_force);
+			motors[MOTOR_COIL]->setBreakingForce(motor_coil_breaking_force);
+
 			return true;
 		}
 
@@ -261,7 +279,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		__characteristicTx.writeValue("> set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;");
 		__characteristicTx.writeValue("> get_motors_info");
 		__characteristicTx.writeValue("> write_motor_preferences_to_eeprom");
-		__characteristicTx.writeValue("> active_breaking a,b,c");
+		__characteristicTx.writeValue("> active_breaking a,b,c; d,e,f;");
 		__characteristicTx.writeValue("> help");
 		__characteristicTx.writeValue("> info");
 

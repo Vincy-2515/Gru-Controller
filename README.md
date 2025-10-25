@@ -42,9 +42,9 @@ DOPO la marcia poi vanno usati i controlli per CARRELLO, BRACCIO, BOBINA
 
 ### Valori assegnabili ai pin del driver L298N per il controllo dei motori
 
-| **Stato**          | **IN1,IN3** | **IN2,IN4** | **ENA,ENB** | **Descrizione**                                                                   |
-| ------------------ | ----------- | ----------- | ----------- | --------------------------------------------------------------------------------- |
-| **Avanti**         | HIGH        | LOW         | PWM         | Ruota in avanti con velocità specificata da "PWM"                                 |
-| **Indietro**       | LOW         | HIGH        | PWM         | Ruota all'indietro con velocità specificata da "PWM"                              |
-| **Disabilitato**   | LOW         | LOW         | LOW         | Continua a girare liberamente se già in movimento o se applicata forza su di esso |
-| **Frenata attiva** | HIGH        | HIGH        | HIGH        | Viene fermato velocemente e mantenuto bloccato in posizione                       |
+| **Stato**          | **IN1,IN3** | **IN2,IN4** | **ENA,ENB** | **Descrizione**                                                                                                          |
+| ------------------ | ----------- | ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Avanti**         | HIGH        | LOW         | PWM         | Ruota in avanti con velocità specificata da "PWM"                                                                        |
+| **Indietro**       | LOW         | HIGH        | PWM         | Ruota all'indietro con velocità specificata da "PWM"                                                                     |
+| **Disabilitato**   | LOW         | LOW         | PWM         | Continua a girare liberamente se già in movimento o se applicata forza su di esso, , "PWM" indica l'intensità di frenata |
+| **Frenata attiva** | HIGH        | HIGH        | PWM         | Viene fermato velocemente e mantenuto bloccato in posizione, "PWM" indica l'intensità di frenata                         |

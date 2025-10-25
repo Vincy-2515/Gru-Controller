@@ -6,34 +6,31 @@
 
 #define DIRECTION_PIN_1 (9)
 #define DIRECTION_PIN_2 (10)
-#define SPEED_PIN A0 // digital PWM pin on UNO
+#define SPEED_PIN A0
 
-// Timeout for pulseIn in microseconds (200 ms)
 const unsigned long PULSE_TIMEOUT_US = 200000UL;
 
 void setup() {
   Serial.begin(115200);
   pinMode(DIRECTION_PIN_1, INPUT);
   pinMode(DIRECTION_PIN_2, INPUT);
-  pinMode(SPEED_PIN, INPUT); // read PWM waveform
+  pinMode(SPEED_PIN, INPUT);
 }
 
 void loop() {
   int direction1 = digitalRead(DIRECTION_PIN_1);
   int direction2 = digitalRead(DIRECTION_PIN_2);
 
-  // Measure PWM high and low durations (in microseconds)
   unsigned long highTime = pulseIn(SPEED_PIN, HIGH, PULSE_TIMEOUT_US);
   unsigned long lowTime  = pulseIn(SPEED_PIN, LOW,  PULSE_TIMEOUT_US);
 
   float duty = 0.0f;
   if ((highTime + lowTime) > 0) {
-    duty = (float)highTime / (float)(highTime + lowTime); // 0..1
+    duty = (float)highTime / (float)(highTime + lowTime);
   }
 
-  // Map duty (0..1) to pseudo 0..255 value and compute average voltage (assuming 5V supply)
   int pwmValue = (int)round(duty * 255.0f);
-  float voltage = duty * 5.0f;
+  float rawPwmValue = duty * 255.0f;
 
   Serial.print("DIR_PIN_1:");
   Serial.print(direction1);
@@ -41,8 +38,8 @@ void loop() {
   Serial.print(direction2);
   Serial.print(",SPEED_PIN:");
   Serial.print(pwmValue);
-  Serial.print(",VOLTAGE:");
-  Serial.println(voltage, 3);
+  Serial.print(",RAW_SPEED:");
+  Serial.println(rawPwmValue);
 
   delay(100);
 }

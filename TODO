@@ -7,6 +7,7 @@
   - [x] creare metodi e variabili nella classe "Motor" per gestire il canale PWM per il controllo delle velocita, 
   - [x] effettuare tutto il setup necessario per canali e pin PWM
 - [ ] risolvere il problema dei valori che non vengono scritti in EEPROM
+- [ ] aggiungere controllo per disabilitazione azioni
 - [ ] Riorganizzazione della classe "Motor":
   - [ ] Aggiungere sottoclassi alla classe "Motor" per organizzarla meglio
   - [ ] aggiornare "toString"

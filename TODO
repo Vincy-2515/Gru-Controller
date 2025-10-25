@@ -1,3 +1,4 @@
+### IMPORTANTI
 - [x] Mettere inizializzazione delle "Preferences" di ogni motore dentro un metodo della classe Motor
 - [x] Aggiungere un comando per la gestione dell'"active breaking"
 - [x] Completare la parte delle azioni che devono performare i pulsanti
@@ -7,7 +8,10 @@
   - [x] creare metodi e variabili nella classe "Motor" per gestire il canale PWM per il controllo delle velocita, 
   - [x] effettuare tutto il setup necessario per canali e pin PWM
 - [ ] aggiungere maggiore controllo per la gestione dei tasti
+- [ ] aggiungere nuovo metodo nella classe "Motor" per l'eliminazione dei valori salvati in memoria
 - [ ] risolvere il problema dei valori che non vengono scritti in EEPROM
+
+### SECONDARIE
 - [ ] Riorganizzazione della classe "Motor":
   - [ ] Aggiungere sottoclassi alla classe "Motor" per organizzarla meglio
   - [ ] aggiornare "toString"

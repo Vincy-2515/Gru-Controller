@@ -92,7 +92,7 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 
 	if (!is_command_recognized) {
 		printErrorMessage("Command unrecognized: %s", command);
-		__characteristicTx.writeValue("Command unrecognized, type \"help\" for help");
+		__characteristicTx.writeValue("Command unrecognized, type \"help\" for help\n"+ String("\n"));
 	}
 }
 
@@ -107,7 +107,7 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 			b.callHandler(BUTTON_PRESSED);
 
 			printInfoMessage(msg_buffer);
-			__characteristicTx.writeValue(msg_buffer);
+			__characteristicTx.writeValue(msg_buffer + String("\n"));
 
 			return true;
 		} else if (strcmp(command, b.getButtonReleasedKeyCode()) == 0) {
@@ -119,7 +119,7 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 			b.callHandler(BUTTON_RELEASED);
 
 			printInfoMessage(msg_buffer);
-			__characteristicTx.writeValue(msg_buffer);
+			__characteristicTx.writeValue(msg_buffer+ String("\n"));
 
 			return true;
 		} else {

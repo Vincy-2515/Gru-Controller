@@ -131,7 +131,7 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 }
 
 bool __checkForCommand(const char* command, char* msg_buffer) {
-	if (strstr(command, "set_motors_speed") != NULL) {
+	if (strstr(command, "SetMotorsGearsSpeeds") != NULL) {
 		int motor_arm_first_gear_speed;
 		int motor_arm_second_gear_speed;
 		int motor_arm_third_gear_speed;
@@ -149,7 +149,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 
 		if (sscanf(
 		        command,
-		        "set_motors_speed %d,%d,%d,%d; %d,%d,%d,%d; %d,%d,%d,%d;",
+		        "SetMotorsGearsSpeeds %d,%d,%d,%d; %d,%d,%d,%d; %d,%d,%d,%d;",
 		        &motor_arm_first_gear_speed, &motor_arm_second_gear_speed, &motor_arm_third_gear_speed, &motor_arm_default_speed,
 		        &motor_trolley_first_gear_speed, &motor_trolley_second_gear_speed, &motor_trolley_third_gear_speed, &motor_trolley_default_speed,
 		        &motor_coil_first_gear_speed, &motor_coil_second_gear_speed, &motor_coil_third_gear_speed, &motor_coil_default_speed)
@@ -200,7 +200,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		}
 
 		return false;
-	} else if (strstr(command, "get_motors_info") != NULL) {
+	} else if (strstr(command, "GetMotorsInformations") != NULL) {
 		printInfoMessage("Printing motors informations...");
 
 		__characteristicTx.writeValue(motors[MOTOR_ARM]->toString());
@@ -213,7 +213,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		printInfoMessage(motors[MOTOR_COIL]->toString().c_str());
 
 		return true;
-	} else if (strstr(command, "write_motor_preferences_to_eeprom") != NULL) {
+	} else if (strstr(command, "WriteMotorsValuesToEeprom") != NULL) {
 		printInfoMessage("Writing values to EEPROM memory...");
 
 		motors[MOTOR_ARM]->transferValuesToEeprom();
@@ -221,7 +221,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		motors[MOTOR_COIL]->transferValuesToEeprom();
 
 		return true;
-	} else if (strstr(command, "erase_motor_preferences_from_eeprom") != NULL) {
+	} else if (strstr(command, "EraseMotorsValuesFromEeprom") != NULL) {
 		printInfoMessage("Writing values to EEPROM memory...");
 
 		motors[MOTOR_ARM]->eraseValuesFromEeprom();
@@ -229,7 +229,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		motors[MOTOR_COIL]->eraseValuesFromEeprom();
 
 		return true;
-	} else if (strstr(command, "active_breaking") != NULL) {
+	} else if (strstr(command, "ActiveBraking") != NULL) {
 		printInfoMessage("Changing active breaking preference...");
 
 		int motor_arm_active_breaking;
@@ -240,7 +240,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		int motor_trolley_breaking_force;
 		int motor_coil_breaking_force;
 
-		if (sscanf(command, "active_breaking %d,%d,%d; %d,%d,%d;",
+		if (sscanf(command, "ActiveBraking %d,%d,%d; %d,%d,%d;",
 		        &motor_arm_active_breaking, &motor_trolley_active_breaking, &motor_coil_active_breaking,
 		        &motor_arm_breaking_force, &motor_trolley_breaking_force, &motor_coil_breaking_force)
 		    != EOF) {
@@ -280,7 +280,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		}
 
 		return false;
-	} else if (strstr(command, "help") != NULL) {
+	} else if (strstr(command, "Help") != NULL) {
 		printInfoMessage("Printing help informations...");
 
 		__characteristicTx.writeValue("\n-=={ HELP MENU }==-\n\nAvailable commands:");
@@ -293,7 +293,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		__characteristicTx.writeValue("> info");
 
 		return true;
-	} else if (strstr(command, "info") != NULL) {
+	} else if (strstr(command, "Informations") != NULL) {
 		printInfoMessage("Printing infos...");
 
 		// clang-format off

@@ -13,9 +13,9 @@
 - [x] risolvere il problema dei valori che non vengono scritti in EEPROM
 
 ### SECONDARIE
+- [ ] Creare una funzione per l'invio di messaggi sia in "Serial" che in "__characteristicTx"
 - [ ] Riorganizzazione della classe "Motor":
   - [ ] Aggiungere sottoclassi alla classe "Motor" per organizzarla meglio
   - [ ] aggiornare "toString"
-- [ ] Creare una funzione per l'invio di messaggi sia in "Serial" che in "__characteristicTx"
 - [ ] Creare una versione "Templated" delle funzioni read/write to/from EEPROM
 - [ ] Gestire in modo migliore i comandi

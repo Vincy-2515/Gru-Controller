@@ -7,7 +7,8 @@
 - [x] risolvere il problema della velocità erronea:
   - [x] creare metodi e variabili nella classe "Motor" per gestire il canale PWM per il controllo delle velocita, 
   - [x] effettuare tutto il setup necessario per canali e pin PWM
-- [ ] aggiungere maggiore controllo per la gestione dei tasti
+- [x] aggiungere maggiore controllo per la gestione dei tasti
+- [ ] cambiare i valori di default dei pin dei motori rispettando la presenza o meno di active-breaking
 - [ ] aggiungere nuovo metodo nella classe "Motor" per l'eliminazione dei valori salvati in memoria
 - [x] risolvere il problema dei valori che non vengono scritti in EEPROM
 

@@ -92,7 +92,7 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 
 	if (!is_command_recognized) {
 		printErrorMessage("Command unrecognized: %s", command);
-		__characteristicTx.writeValue("Command unrecognized, type \"help\" for help\n"+ String("\n"));
+		__characteristicTx.writeValue("Command unrecognized, type \"help\" for help\n" + String("\n"));
 	}
 }
 
@@ -104,7 +104,7 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 			    "Command recognized: Pressed \"%s\"",
 			    b.getButtonName());
 
-			b.callHandler(BUTTON_PRESSED);
+			b.callHandler(b.getButtonName(), BUTTON_PRESSED);
 
 			printInfoMessage(msg_buffer);
 			__characteristicTx.writeValue(msg_buffer + String("\n"));
@@ -116,10 +116,10 @@ bool __checkForButtonPress(const char* command, char* msg_buffer) {
 			    "Command recognized: Released \"%s\"",
 			    b.getButtonName());
 
-			b.callHandler(BUTTON_RELEASED);
+			b.callHandler(b.getButtonName(), BUTTON_RELEASED);
 
 			printInfoMessage(msg_buffer);
-			__characteristicTx.writeValue(msg_buffer+ String("\n"));
+			__characteristicTx.writeValue(msg_buffer + String("\n"));
 
 			return true;
 		} else {
@@ -248,7 +248,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 			}
 			if ((motor_arm_breaking_force < 0 || motor_arm_breaking_force > 254)
 			    || (motor_trolley_breaking_force < 0 || motor_trolley_breaking_force > 254)
-			    || (motor_coil_breaking_force < 0 || motor_coil_breaking_force > 254)) { //254 because 255 outputs 0 for some reason
+			    || (motor_coil_breaking_force < 0 || motor_coil_breaking_force > 254)) { // 254 because 255 outputs 0 for some reason
 
 				__characteristicTx.writeValue("Only values between the range 0-254 are accepted for breaking force, value not updated");
 				printErrorMessage("Only values between the range 0-254 are accepted for breaking force, value not updated");

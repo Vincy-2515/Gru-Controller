@@ -1,23 +1,25 @@
 #include <Buttons.h>
 #include <componentHandler.h>
 
+#define __NO_ARROW_BUTTON_PRESSED ""
+
 static Action __current_action = ACTION_NONE;
 static Rotation __current_rotation = ROTATION_DEFAULT;
 static Gear __current_gear = GEAR_DEFAULT;
-static int __currently_active_motor_id = -1;
+static String __currently_pressed_arrow_button_name = __NO_ARROW_BUTTON_PRESSED;
 static bool __is_macro4_pressed = false;
 
-static void __handleButtonArrowUp(int btn_status);
-static void __handleButtonArrowRight(int btn_status);
-static void __handleButtonArrowDown(int btn_status);
-static void __handleButtonArrowLeft(int btn_status);
-static void __handleButtonMacro1(int btn_status);
-static void __handleButtonMacro2(int btn_status);
-static void __handleButtonMacro3(int btn_status);
-static void __handleButtonMacro4(int btn_status);
-static void __checkButtonStatusAndUpdateActionAndRotation(int btn_status, MotorId motor_id, Action action, Rotation rotation, Gear gear);
-static void __updateActionAndRotation(MotorId motor_id, Action action, Rotation rotation, Gear gear);
-static void __updateGear(int btn_status, Gear gear);
+static void __handleButtonArrowUp(String button_name, int button_status);
+static void __handleButtonArrowRight(String button_name, int button_status);
+static void __handleButtonArrowDown(String button_name, int button_status);
+static void __handleButtonArrowLeft(String button_name, int button_status);
+static void __handleButtonMacro1(String button_name, int button_status);
+static void __handleButtonMacro2(String button_name, int button_status);
+static void __handleButtonMacro3(String button_name, int button_status);
+static void __handleButtonMacro4(String button_name, int button_status);
+static void __checkArrowButtonStatusAndUpdateActionAndRotation(String button_name, int button_status, MotorId motor_id, Action action, Rotation rotation, Gear gear);
+static void __updateActionAndRotation(String button_name, MotorId motor_id, Action action, Rotation rotation, Gear gear);
+static void __updateGear(int button_status, Gear gear);
 
 static Button __btnArrowUp("btnArrowUp", "!B516", "!B507", __handleButtonArrowUp);
 static Button __btnArrowRight("btnArrowRight", "!B813", "!B804", __handleButtonArrowRight);
@@ -39,78 +41,34 @@ Button buttons[NUMBER_OF_BUTTONS] = {
 	__btnMacro4
 };
 
-/*============
-    HANDLERS
-  ============*/
+static void __checkArrowButtonStatusAndUpdateActionAndRotation(
+    String button_name,
+    int button_status,
+    MotorId motor_id,
+    Action action,
+    Rotation rotation,
+    Gear gear) {
 
-/*-----------------
-    Arrow buttons
-  -----------------*/
+	if ((button_status == BUTTON_PRESSED)
+	    && ((__currently_pressed_arrow_button_name == button_name)
+	        || (__currently_pressed_arrow_button_name == __NO_ARROW_BUTTON_PRESSED))) {
 
-static void __handleButtonArrowUp(int btn_status) {
-	if (__is_macro4_pressed) {
-		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_COIL, ACTION_ROTATE_COIL, ROTATION_DEFAULT, __current_gear);
+		__updateActionAndRotation(button_name, motor_id, action, rotation, gear);
+
+	} else if ((button_status == BUTTON_RELEASED)
+	    && ((__currently_pressed_arrow_button_name == button_name)
+	        || (__currently_pressed_arrow_button_name == __NO_ARROW_BUTTON_PRESSED))) {
+
+		__updateActionAndRotation(button_name, motor_id, ACTION_NONE, ROTATION_DEFAULT, GEAR_DEFAULT);
+		__currently_pressed_arrow_button_name = __NO_ARROW_BUTTON_PRESSED;
+
 	} else {
-		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_DEFAULT, __current_gear);
+		printWarningMessage("Button-press ignored, another \"arrow-button\" is already pressed");
 	}
 }
 
-static void __handleButtonArrowRight(int btn_status) {
-	__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_ARM, ACTION_ROTATE_ARM, ROTATION_DEFAULT, __current_gear);
-}
-
-static void __handleButtonArrowDown(int btn_status) {
-	if (__is_macro4_pressed) {
-		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_COIL, ACTION_ROTATE_COIL, ROTATION_INVERSE, __current_gear);
-	} else {
-		__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_INVERSE, __current_gear);
-	}
-}
-
-static void __handleButtonArrowLeft(int btn_status) {
-	__checkButtonStatusAndUpdateActionAndRotation(btn_status, MOTOR_ARM, ACTION_ROTATE_ARM, ROTATION_INVERSE, __current_gear);
-}
-
-/*-----------------
-    Macro buttons
-  -----------------*/
-
-static void __handleButtonMacro1(int btn_status) {
-	__updateGear(btn_status, GEAR_FIRST);
-}
-
-static void __handleButtonMacro2(int btn_status) {
-	__updateGear(btn_status, GEAR_SECOND);
-}
-
-static void __handleButtonMacro3(int btn_status) {
-	__updateGear(btn_status, GEAR_THIRD);
-}
-
-static void __handleButtonMacro4(int btn_status) {
-	if ((btn_status == BUTTON_PRESSED) && __is_macro4_pressed) {
-		__is_macro4_pressed = false;
-	} else if ((btn_status == BUTTON_PRESSED) && !__is_macro4_pressed) {
-		__is_macro4_pressed = true;
-	}
-}
-
-/*===================
-    OTHER FUNCTIONS
-  ===================*/
-
-static void __checkButtonStatusAndUpdateActionAndRotation(int btn_status, MotorId motor_id, Action action, Rotation rotation, Gear gear) {
-	if (btn_status == BUTTON_PRESSED) {
-		__updateActionAndRotation(motor_id, action, rotation, gear);
-	} else {
-		__updateActionAndRotation(motor_id, ACTION_NONE, ROTATION_DEFAULT, GEAR_DEFAULT);
-	}
-}
-
-static void __updateActionAndRotation(MotorId motor_id, Action action, Rotation rotation, Gear gear) {
+static void __updateActionAndRotation(String button_name, MotorId motor_id, Action action, Rotation rotation, Gear gear) {
 	if ((action != ACTION_NONE) && (__current_action != ACTION_NONE)) {
-		return;
-	} else if ((__currently_active_motor_id != -1) && (__currently_active_motor_id != motor_id) && (action != ACTION_NONE)) {
 		return;
 	}
 
@@ -120,16 +78,83 @@ static void __updateActionAndRotation(MotorId motor_id, Action action, Rotation 
 
 	__current_action = action;
 	__current_rotation = rotation;
-	__currently_active_motor_id = (action == ACTION_NONE) ? -1 : motor_id;
+	__currently_pressed_arrow_button_name = button_name;
 }
 
-static void __updateGear(int btn_status, Gear gear) {
-	if (btn_status == BUTTON_RELEASED) {
+static void __updateGear(int button_status, Gear gear) {
+	if (button_status == BUTTON_RELEASED) {
 		__current_gear = GEAR_DEFAULT;
 		return;
-	} else if ((__current_gear != GEAR_DEFAULT) && (btn_status != BUTTON_RELEASED)) {
+	} else if ((__current_gear != GEAR_DEFAULT) && (button_status != BUTTON_RELEASED)) {
 		return;
 	}
 
 	__current_gear = gear;
+}
+
+/*============
+    HANDLERS
+  ============*/
+
+/*-----------------
+    Arrow buttons
+  -----------------*/
+
+static void __handleButtonArrowUp(String button_name, int button_status) {
+	if (__is_macro4_pressed) {
+		__checkArrowButtonStatusAndUpdateActionAndRotation(button_name, button_status, MOTOR_COIL, ACTION_ROTATE_COIL, ROTATION_DEFAULT, __current_gear);
+	} else {
+		__checkArrowButtonStatusAndUpdateActionAndRotation(button_name, button_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_DEFAULT, __current_gear);
+	}
+}
+
+static void __handleButtonArrowRight(String button_name, int button_status) {
+	__checkArrowButtonStatusAndUpdateActionAndRotation(button_name, button_status, MOTOR_ARM, ACTION_ROTATE_ARM, ROTATION_DEFAULT, __current_gear);
+}
+
+static void __handleButtonArrowDown(String button_name, int button_status) {
+	if (__is_macro4_pressed) {
+		__checkArrowButtonStatusAndUpdateActionAndRotation(button_name, button_status, MOTOR_COIL, ACTION_ROTATE_COIL, ROTATION_INVERSE, __current_gear);
+	} else {
+		__checkArrowButtonStatusAndUpdateActionAndRotation(button_name, button_status, MOTOR_TROLLEY, ACTION_MOVE_TROLLEY, ROTATION_INVERSE, __current_gear);
+	}
+}
+
+static void __handleButtonArrowLeft(String button_name, int button_status) {
+	__checkArrowButtonStatusAndUpdateActionAndRotation(button_name, button_status, MOTOR_ARM, ACTION_ROTATE_ARM, ROTATION_INVERSE, __current_gear);
+}
+
+/*-----------------
+    Macro buttons
+  -----------------*/
+
+static void __handleButtonMacro1(String button_name, int button_status) {
+	__updateGear(button_status, GEAR_FIRST);
+}
+
+static void __handleButtonMacro2(String button_name, int button_status) {
+	__updateGear(button_status, GEAR_SECOND);
+}
+
+static void __handleButtonMacro3(String button_name, int button_status) {
+	__updateGear(button_status, GEAR_THIRD);
+}
+
+static void __handleButtonMacro4(String button_name, int button_status) {
+	if ((button_status == BUTTON_PRESSED)
+	    && __is_macro4_pressed
+	    && (__currently_pressed_arrow_button_name == __NO_ARROW_BUTTON_PRESSED)) {
+
+		__is_macro4_pressed = false;
+
+	} else if ((button_status == BUTTON_PRESSED)
+	    && !__is_macro4_pressed
+	    && (__currently_pressed_arrow_button_name == __NO_ARROW_BUTTON_PRESSED)) {
+
+		__is_macro4_pressed = true;
+
+	} else if (__currently_pressed_arrow_button_name != __NO_ARROW_BUTTON_PRESSED) {
+
+		printWarningMessage("Button-press ignored, an \"arrow-button\" is still pressed");
+	}
 }

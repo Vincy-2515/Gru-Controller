@@ -52,17 +52,17 @@ public:
 	    String eeprom_key_active_breaking,
 	    String eeprom_key_breaking_force);
 
+	const char* getMotorName();
+
 	void initializeMotorSpeedsPreferences();
+
+	void setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed);
+	byte getSpeed(Gear gear);
 
 	void updateValuesFromEeprom();
 	void transferValuesToEeprom();
-
-	void setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed);
-
-	byte getSpeed(Gear gear);
-
-	const char* getMotorName();
-
+	void eraseValuesFromEeprom();
+	
 	int getDirectionControllingPin1();
 	int getDirectionControllingPin2();
 	int getSpeedControllingPin();

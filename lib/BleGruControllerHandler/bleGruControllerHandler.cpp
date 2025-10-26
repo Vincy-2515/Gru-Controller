@@ -302,7 +302,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		"\n-=={ INFORMATIONS }==-" +
 		"\n" +
 		"\n Version: v1.0.0" +
-		"\n Developer: Vincenzo Scarso" +
+		"\n Developer: Vincenzo Scarso (Vincy-2515)" +
 		"\n Github: https://github.com/Vincy-2515";
 		// clang-format on
 

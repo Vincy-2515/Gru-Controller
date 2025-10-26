@@ -45,10 +45,14 @@ Motor::Motor(
 	this->__EEPROM_KEY_BREAKING_FORCE = eeprom_key_breaking_force;
 }
 
+const char* Motor::getMotorName() {
+	return this->__motor_name.c_str();
+}
+
 void Motor::initializeMotorSpeedsPreferences() {
 	// NOTE: "Preferences.begin()" MUST NOT be executed inside Objects' constructors
 	if (!this->motor_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ)) {
-		printErrorMessage("\"motor_preferences\" has not been initialized");
+		printErrorMessage("\"motor_preferences\" couldn't be opened");
 		return;
 	}
 
@@ -57,7 +61,7 @@ void Motor::initializeMotorSpeedsPreferences() {
 
 		this->motor_preferences.end();
 		if (!this->motor_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ_WRITE)) {
-			printErrorMessage("\"motor_preferences\" has not been initialized");
+			printErrorMessage("\"motor_preferences\" couldn't be opened");
 			return;
 		}
 
@@ -71,25 +75,7 @@ void Motor::initializeMotorSpeedsPreferences() {
 		this->motor_preferences.end();
 	}
 
-	this->motor_preferences.end();
-}
-
-void Motor::updateValuesFromEeprom() {
-	this->setFirstGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed()));
-	this->setSecondGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed()));
-	this->setThirdGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed()));
-	this->setDefaultSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed()));
-	this->setActiveBreaking(readBoolValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking()));
-	this->setBreakingForce(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyBreakingForce()));
-}
-
-void Motor::transferValuesToEeprom() {
-	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed(), this->getFirstGearSpeed());
-	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed(), this->getSecondGearSpeed());
-	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed(), this->getThirdGearSpeed());
-	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed(), this->getDefaultSpeed());
-	writeBoolValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking(), this->getActiveBreaking());
-	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyBreakingForce(), this->getBreakingForce());
+	this->motor_preferences.end(); //"__areAllKeyInitialized()" won't work if the namespace is closed
 }
 
 void Motor::setAllSpeeds(byte first_gear_speed, byte second_gear_speed, byte third_gear_speed, byte default_speed) {
@@ -116,8 +102,41 @@ byte Motor::getSpeed(Gear gear) {
 	return this->getDefaultSpeed();
 }
 
-const char* Motor::getMotorName() {
-	return this->__motor_name.c_str();
+/*=====================
+    EEPROM MANAGEMENT
+  =====================*/
+
+void Motor::updateValuesFromEeprom() {
+	this->setFirstGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed()));
+	this->setSecondGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed()));
+	this->setThirdGearSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed()));
+	this->setDefaultSpeed(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed()));
+	this->setActiveBreaking(readBoolValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking()));
+	this->setBreakingForce(readByteValueFromEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyBreakingForce()));
+}
+
+void Motor::transferValuesToEeprom() {
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyFirstGearSpeed(), this->getFirstGearSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeySecondGearSpeed(), this->getSecondGearSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyThirdGearSpeed(), this->getThirdGearSpeed());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyDefaultSpeed(), this->getDefaultSpeed());
+	writeBoolValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyActiveBreaking(), this->getActiveBreaking());
+	writeByteValueToEeprom(this->motor_preferences, this->getEepromNamespaceMotor(), this->getEepromKeyBreakingForce(), this->getBreakingForce());
+}
+
+void Motor::eraseValuesFromEeprom() {
+	if (!this->motor_preferences.begin(this->getEepromNamespaceMotor(), EEPROM_MODE_READ_WRITE)) {
+		printErrorMessage("\"motor_preferences\" couldn't be opened");
+		return;
+	}
+
+	if (this->motor_preferences.clear()) {
+		printInfoMessage("Values of %s namespace have been deleted", this->getEepromNamespaceMotor());
+	} else {
+		printErrorMessage("Values of %s namespace have not been deleted due to some error", this->getEepromNamespaceMotor());
+	}
+
+	this->motor_preferences.end();
 }
 
 /*============================
@@ -269,5 +288,5 @@ bool Motor::__areAllKeyInitialized() {
 	    && this->motor_preferences.isKey(getEepromKeyThirdGearSpeed())
 	    && this->motor_preferences.isKey(getEepromKeyDefaultSpeed())
 	    && this->motor_preferences.isKey(getEepromKeyActiveBreaking())
-		&& this->motor_preferences.isKey(getEepromKeyBreakingForce()));
+	    && this->motor_preferences.isKey(getEepromKeyBreakingForce()));
 }

@@ -5,10 +5,12 @@
 void __sendValues(Motor* motor, uint8_t direction1_value, uint8_t direction2_value, uint8_t speed_value);
 void __pinsSetup();
 void __updateMotorsValuesFromEeprom();
+void __setDefaultValuesToMotorPins();
 
 void componentsSetup() {
 	__pinsSetup();
 	__updateMotorsValuesFromEeprom();
+	__setDefaultValuesToMotorPins();
 }
 
 void blinkLedBuiltin(int ripetitions) {
@@ -34,7 +36,7 @@ void updateMotorState(MotorId motor_id, Action action, Rotation rotation, Gear g
 	} else {
 		if (rotation == ROTATION_DEFAULT) {
 			__sendValues(motor, HIGH, LOW, motor->getSpeed(gear));
-		} else {
+		} else if (rotation == ROTATION_INVERSE) {
 			__sendValues(motor, LOW, HIGH, motor->getSpeed(gear));
 		}
 	}
@@ -81,4 +83,10 @@ void __updateMotorsValuesFromEeprom() {
 	}
 
 	printInfoMessage("Motors' values setup procedure ended");
+}
+
+void __setDefaultValuesToMotorPins() {
+	for (int i = 0; i < NUMBER_OF_MOTORS; i++) {
+		updateMotorState(MotorId(i), ACTION_NONE, ROTATION_DEFAULT, GEAR_DEFAULT);
+	}
 }

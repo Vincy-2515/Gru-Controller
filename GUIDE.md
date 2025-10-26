@@ -5,10 +5,9 @@
 <!-- omit from toc -->
 ## Tabella dei contenuti
 - [Tasti](#tasti)
-  - [Ordine di Pressione dei Tasti](#ordine-di-pressione-dei-tasti)
-  - [Azioni (frecce direzionali)](#azioni-frecce-direzionali)
-  - [Marce (macro1, macro2, macro3)](#marce-macro1-macro2-macro3)
-  - [Modalità Tasti](#modalità-tasti)
+  - [Ordine di Pressione](#ordine-di-pressione)
+  - [Azioni (Frecce Direzionali)](#azioni-frecce-direzionali)
+  - [Marce (Velocità)](#marce-velocità)
 - [Comandi](#comandi)
   - [SetMotorsGearsSpeeds](#setmotorsgearsspeeds)
   - [GetMotorsInformations](#getmotorsinformations)
@@ -18,46 +17,39 @@
   - [Help](#help)
   - [Informations](#informations)
 
+
 ## Tasti
+I controlli sono divisi in **Marce** (velocità) e **Azioni** (movimenti dei motori). Le Marce vanno selezionate **prima** delle Azioni.
 
-### Ordine di Pressione dei Tasti
+### Ordine di Pressione
+1.  **Marcia**, **Macro4** (se necessarie)
+2.  **Azione** (Frecce direzionali)
 
-| Ordine | Azione                             |
-| ------ | ---------------------------------- |
-| 1      | MARCIA, Macro4 (quando necessarie) |
-| 2      | Frecce direzionali                 |
+---
 
-### Azioni (frecce direzionali)
+### Azioni (Frecce Direzionali)
+Tutte le frecce direzionali funzionano in modalità "**TIENI PREMUTO**": il movimento inizia quando sono premute e si blocca quando vengono rilasciate.
 
-| Azione   | Tasti                            | Descrizione                                |
-| -------- | -------------------------------- | ------------------------------------------ |
-| BRACCIO  | FrecciaDestra, FrecciaSinistra   | Rotazione oraria e antioraria del braccio  |
-| BOBINA   | FrecciaSu, FrecciaGiù            | Arrotolamento e rilascio del cavo          |
-| CARRELLO | Macro4 + (FrecciaSu, FrecciaGiù) | Scorrimento avanti e indietro del carrello |
+Il tasto **Macro4** funziona in modalità "**PREMI**" scambia i controlli di **CARRELLO** e **BOBINA** sulle frecce Su/Giù.
 
-### Marce (macro1, macro2, macro3)
+| Motore controllato | Tasti (Macro4 NON premuto)     | Descrizione                                                       |
+| :----------------- | :----------------------------- | :---------------------------------------------------------------- |
+| **BRACCIO**        | FrecciaDestra, FrecciaSinistra | Rotazione oraria e antioraria                                     |
+| **CARRELLO**       | FrecciaSu, FrecciaGiù          | Scorrimento avanti e indietro (Controlli Standard)                |
+| **BOBINA**         | **Nessuna Azione**             | Arrotolamento e rilascio del cavo (Controlli Scambiati da Macro4) |
 
-| Marcia      | Tasti                              |
-| ----------- | ---------------------------------- |
-| PREDEFINITA | Nessun tasto: velocità predefinita |
-| PRIMA       | Macro1: velocità bassa             |
-| SECONDA     | Macro2: velocità media             |
-| TERZA       | Macro3: velocità alta              |
+---
 
-DOPO la marcia poi vanno usati i controlli per CARRELLO, BRACCIO, BOBINA.
+### Marce (Velocità)
+Le Marce modificano la velocità dei motori e devono essere tenute premute **prima** di eseguire un'Azione. La loro modalità è **TIENI PREMUTO**.
 
-### Modalità Tasti
+| Marcia          | Tasto        | Velocità    | Azione al Rilascio                       |
+| :-------------- | :----------- | :---------- | :--------------------------------------- |
+| **Predefinita** | Nessun tasto | Predefinita | N/A                                      |
+| **Prima**       | Macro1       | Bassa       | Nessuna, **SE** rilasciato dopo l'azione |
+| **Seconda**     | Macro2       | Media       | Nessuna, **SE** rilasciato dopo l'azione |
+| **Terza**       | Macro3       | Alta        | Nessuna, **SE** rilasciato dopo l'azione |
 
-| Tasto           | Modalità      |
-| --------------- | ------------- |
-| FrecciaSu       | TIENI PREMUTO |
-| FrecciaGiù      | TIENI PREMUTO |
-| FrecciaDestra   | TIENI PREMUTO |
-| FrecciaSinistra | TIENI PREMUTO |
-| Macro1          | TIENI PREMUTO |
-| Macro2          | TIENI PREMUTO |
-| Macro3          | TIENI PREMUTO |
-| Macro4          | PREMI         |
 
 ## Comandi
 

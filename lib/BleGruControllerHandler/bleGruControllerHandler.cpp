@@ -291,7 +291,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		__characteristicTx.writeValue("> ActiveBraking a,b,c; d,e,f;");
 		__characteristicTx.writeValue("> Help");
 		__characteristicTx.writeValue("> Informations");
-		__characteristicTx.writeValue("For more informations visit:\nhttps://someting.gg");
+		__characteristicTx.writeValue("For more informations visit:\nhttps://something.gg");
 
 		return true;
 	} else if (strstr(command, "Informations") != NULL) {

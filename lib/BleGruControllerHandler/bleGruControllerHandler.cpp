@@ -284,13 +284,14 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		printInfoMessage("Printing help informations...");
 
 		__characteristicTx.writeValue("\n-=={ HELP MENU }==-\n\nAvailable commands:");
-		__characteristicTx.writeValue("> set_motors_speed a,b,c,d; e,f,g,h; i,k,l,m;");
-		__characteristicTx.writeValue("> get_motors_info");
-		__characteristicTx.writeValue("> write_motor_preferences_to_eeprom");
-		__characteristicTx.writeValue("> erase_motor_preferences_from_eeprom");
-		__characteristicTx.writeValue("> active_breaking a,b,c; d,e,f;");
-		__characteristicTx.writeValue("> help");
-		__characteristicTx.writeValue("> info");
+		__characteristicTx.writeValue("> SetMotorsGearsSpeeds a,b,c,d; e,f,g,h; i,k,l,m;");
+		__characteristicTx.writeValue("> GetMotorsInformations");
+		__characteristicTx.writeValue("> WriteMotorsValuesToEeprom");
+		__characteristicTx.writeValue("> EraseMotorsValuesFromEeprom");
+		__characteristicTx.writeValue("> ActiveBraking a,b,c; d,e,f;");
+		__characteristicTx.writeValue("> Help");
+		__characteristicTx.writeValue("> Informations");
+		__characteristicTx.writeValue("For more informations visit:\nhttps://someting.gg");
 
 		return true;
 	} else if (strstr(command, "Informations") != NULL) {

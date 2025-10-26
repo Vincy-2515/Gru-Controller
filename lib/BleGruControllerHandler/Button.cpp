@@ -3,7 +3,7 @@
 Button::Button(const char* button_name,
     const char* button_pressed_key_code,
     const char* button_released_key_code,
-    void (*handler)(int btn_status)) {
+    void (*handler)(String button_name, int button_status)) {
 	this->__button_name = String(
 	    button_name ? button_name : "");
 	this->__button_pressed_key_code = String(
@@ -25,9 +25,9 @@ const char* Button::getButtonReleasedKeyCode() {
 	return this->__button_released_key_code.c_str();
 }
 
-bool Button::callHandler(int btn_status) {
+bool Button::callHandler(String button_name, int button_status) {
 	if (__handler) {
-		__handler(btn_status);
+		__handler(button_name, button_status);
 		return true;
 	}
 

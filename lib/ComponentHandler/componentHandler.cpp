@@ -13,7 +13,13 @@ void componentsSetup() {
 	__setDefaultValuesToMotorPins();
 }
 
-void blinkLedBuiltin(int ripetitions) {
+#ifdef LED_BUILTIN
+
+void setLedBuiltInStatus(uint8_t value) {
+	digitalWrite(LED_BUILTIN, value);
+}
+
+void blinkLedBuiltIn(int ripetitions) {
 	int i = 0;
 	while (i < ripetitions) {
 		digitalWrite(LED_BUILTIN, LOW);
@@ -23,6 +29,18 @@ void blinkLedBuiltin(int ripetitions) {
 		i++;
 	}
 }
+
+#else /* LED_BUILTIN */
+
+void setLedBuiltInStatus(uint8_t value) {
+	return;
+}
+
+void blinkLedBuiltIn(int ripetitions) {
+	return;
+}
+
+#endif /* LED_BUILTIN */
 
 void updateMotorState(MotorId motor_id, Action action, Rotation rotation, Gear gear) {
 	Motor* motor = motors[motor_id];
@@ -57,8 +75,10 @@ void __sendValues(Motor* motor, uint8_t direction1_value, uint8_t direction2_val
 void __pinsSetup() {
 	printInfoMessage("Starting pins setup procedure...");
 
+#ifdef LED_BUILTIN
 	pinMode(LED_BUILTIN, OUTPUT);
 	digitalWrite(LED_BUILTIN, LOW);
+#endif /* LED_BUILTIN */
 
 	for (Motor* motor : motors) {
 		pinMode(motor->getDirectionControllingPin1(), OUTPUT);

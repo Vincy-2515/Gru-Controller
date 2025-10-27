@@ -92,7 +92,7 @@ void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic charact
 
 	if (!is_command_recognized) {
 		printErrorMessage("Command unrecognized: %s", command);
-		__characteristicTx.writeValue("Command unrecognized, type \"help\" for help\n" + String("\n"));
+		__characteristicTx.writeValue("Command unrecognized, type \"Help\" for help\n" + String("\n"));
 	}
 }
 

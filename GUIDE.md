@@ -108,6 +108,9 @@ Le Marce modificano la velocità dei motori e devono essere tenute premute **pri
 | e         | CARRELLO           | controllo intensità          | 0-255            |
 | f         | BOBINA             | controllo intensità          | 0-255            |
 
+> [!IMPORTANT]
+> Per preservare la memoria interna della scheda, i valori assegnati con questo comando sono **TEMPORANEI**, quindi vengono cancellati al riavvio della scheda. Solo dopo aver effettuato tutte le varie prove e aver scelto i valori finali è possibile eseguire il comando [WriteMotorsValuesToEeprom](#writemotorsvaluestoeeprom) per salvare effettivamente i valori nella memoria.
+
 
 ### Help
 - **_Descrizione_**: Mostra il menù di aiuto che elenca i comandi disponibili e un link a questa guida.

@@ -291,7 +291,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		__characteristicTx.writeValue("> ActiveBraking a,b,c; d,e,f;");
 		__characteristicTx.writeValue("> Help");
 		__characteristicTx.writeValue("> Informations");
-		__characteristicTx.writeValue("For more informations visit:\nhttps://something.gg");
+		__characteristicTx.writeValue("For more informations visit:\nhttps://github.com/Vincy-2515/Gru-Controller/blob/main/GUIDE.md");
 
 		return true;
 	} else if (strstr(command, "Informations") != NULL) {
@@ -301,7 +301,7 @@ bool __checkForCommand(const char* command, char* msg_buffer) {
 		String string = String("") +
 		"\n-=={ INFORMATIONS }==-" +
 		"\n" +
-		"\n Version: v1.0.0" +
+		"\n Version: " + VERSION_NUMBER +
 		"\n Developer: Vincenzo Scarso (Vincy-2515)" +
 		"\n Github: https://github.com/Vincy-2515";
 		// clang-format on

@@ -104,9 +104,9 @@ Le Marce modificano la velocità dei motori e devono essere tenute premute **pri
 | a         | BRACCIO            | abilitazione/disabilitazione | 1,0              |
 | b         | CARRELLO           | abilitazione/disabilitazione | 1,0              |
 | c         | BOBINA             | abilitazione/disabilitazione | 1,0              |
-| d         | BRACCIO            | controllo intensità          | 0-255            |
-| e         | CARRELLO           | controllo intensità          | 0-255            |
-| f         | BOBINA             | controllo intensità          | 0-255            |
+| d         | BRACCIO            | controllo intensità          | 0-254            |
+| e         | CARRELLO           | controllo intensità          | 0-254            |
+| f         | BOBINA             | controllo intensità          | 0-254            |
 
 > [!IMPORTANT]
 > Per preservare la memoria interna della scheda, i valori assegnati con questo comando sono **TEMPORANEI**, quindi vengono cancellati al riavvio della scheda. Solo dopo aver effettuato tutte le varie prove e aver scelto i valori finali è possibile eseguire il comando [WriteMotorsValuesToEeprom](#writemotorsvaluestoeeprom) per salvare effettivamente i valori nella memoria.

@@ -109,7 +109,7 @@ Le Marce modificano la velocità dei motori e devono essere tenute premute **pri
 
 
 ### Help
-- **_Descrizione_**: Mostra il menù di aiuto che mostra i comandi disponibili e un link a questa guida.
+- **_Descrizione_**: Mostra il menù di aiuto che elenca i comandi disponibili e un link a questa guida.
 - **_Sintassi_**: `Help`
 
 

@@ -16,6 +16,7 @@
   - [ActiveBraking](#activebraking)
   - [Help](#help)
   - [Informations](#informations)
+- [Collegamenti](#collegamenti)
 
 
 ## Tasti
@@ -116,3 +117,21 @@ Le Marce modificano la velocità dei motori e devono essere tenute premute **pri
 ### Informations
 - **_Descrizione_**: Mostra informazioni riguardo la versione e altro.
 - **_Sintassi_**: `Informations`
+
+
+## Collegamenti
+| ARDUINO PIN | L298N DRIVER PIN | DRIVER N. | MOTORE CONTROLLATO | FUNZIONE    | COLORE CAVO |
+| ----------- | ---------------- | --------- | ------------------ | ----------- | ----------- |
+| 33          | IN1              | 1         | BRACCIO            | DIREZIONE_1 | FUCSIA      |
+| 32          | IN2              | 1         | BRACCIO            | DIREZIONE_2 | ARANCIONE   |
+| 25          | ENA              | 1         | BRACCIO            | VELOCITA'   | VERDE-ACQUA |
+| 18          | IN1              | 2         | CARRELLO           | DIREZIONE_1 | FUCSIA      |
+| 5           | IN2              | 2         | CARRELLO           | DIREZIONE_2 | ARANCIONE   |
+| 19          | ENA              | 2         | CARRELLO           | VELOCITA'   | VERDE-ACQUA |
+| 14          | IN3              | 2         | BOBINA             | DIREZIONE_1 | FUCSIA      |
+| 27          | IN4              | 2         | BOBINA             | DIREZIONE_2 | ARANCIONE   |
+| 26          | ENB              | 2         | BOBINA             | VELOCITA'   | VERDE-ACQUA |
+
+<img alt="Gru-Controller circuit.svg" src="res/Gru-Controller circuit.svg">
+
+[Link del circuito](https://app.cirkitdesigner.com/project/7fe3ca31-ecc5-4dff-93e0-ff26198fbe86)

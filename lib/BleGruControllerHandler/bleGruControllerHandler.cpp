@@ -20,11 +20,11 @@ void bleGruControllerSetup() {
 	if (!BLE.begin()) {
 		printErrorMessage("Bluetooth Low Energy module failed starting, press the reset button to recover");
 		while (true)
-			blinkLedBuiltin(1);
+			blinkLedBuiltIn(1);
 	}
 
 	printInfoMessage("Bluetooth Low Energy module started successfully");
-	digitalWrite(LED_BUILTIN, HIGH);
+	setLedBuiltInStatus(HIGH);
 
 	BLE.setDeviceName(DEVICE_NAME);
 	BLE.setLocalName(LOCAL_NAME);
@@ -44,14 +44,14 @@ void bleGruControllerSetup() {
 	if (!BLE.setAdvertisedService(__serviceUart)) {
 		while (true) {
 			printErrorMessage("Advertising failed starting, press the reset button to recover");
-			blinkLedBuiltin(1);
+			blinkLedBuiltIn(1);
 		}
 	}
 
 	if (!BLE.advertise()) {
 		printErrorMessage("Advertising failed starting, press the reset button to recover");
 		while (true)
-			blinkLedBuiltin(1);
+			blinkLedBuiltIn(1);
 	}
 	printInfoMessage("Advertising started successfully");
 
@@ -66,14 +66,14 @@ void __handleDeviceConnection(BLEDevice central) {
 	printInfoMessage("[%s] Central connected",
 	    central.address().c_str());
 
-	blinkLedBuiltin(3);
+	blinkLedBuiltIn(3);
 }
 
 void __handleDeviceDisconnection(BLEDevice central) {
 	printInfoMessage("[%s] Central disconnected",
 	    central.address().c_str());
 
-	blinkLedBuiltin(2);
+	blinkLedBuiltIn(2);
 }
 
 void __handleCharacteristicRxWritten(BLEDevice device, BLECharacteristic characteristic) {

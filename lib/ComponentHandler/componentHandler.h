@@ -11,7 +11,8 @@
 #define ANALOG_LOW (0)
 
 void componentsSetup();
-void blinkLedBuiltin(int ripetitions);
+void setLedBuiltInStatus (uint8_t value);
+void blinkLedBuiltIn(int ripetitions);
 void updateMotorState(MotorId motor_id, Action action, Rotation rotation, Gear gear);
 
 #endif

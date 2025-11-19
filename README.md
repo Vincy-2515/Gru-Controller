@@ -19,3 +19,5 @@ Gru-Controller è uno script in Arduino che ho scritto su PlatformIO per il cont
 ---
 
 [Clicca qui per accedere alla guida.](GUIDE.md)
+
+![video](res/1117.mp4)
